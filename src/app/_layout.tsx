@@ -18,6 +18,10 @@ export default function Layout() {
           name="(protected)"
           options={{ title: "Dashboard", headerShown: false }}
         />
+        <Stack.Screen
+          name="+not-found"
+          options={{ title: "Dashboard", headerShown: false }}
+        />
       </Stack>
     </AuthProvider>
   );
