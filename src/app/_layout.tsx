@@ -20,7 +20,7 @@ export default function Layout() {
         />
         <Stack.Screen
           name="+not-found"
-          options={{ title: "Dashboard", headerShown: false }}
+          options={{ title: "Not Found", headerShown: false }}
         />
       </Stack>
     </AuthProvider>

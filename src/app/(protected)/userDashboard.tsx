@@ -3,7 +3,7 @@ import { Redirect } from "expo-router";
 import { View, Text, Button } from "react-native";
 
 export default function Index() {
-  const { logout} = useAuth();
+  const { logout, role } = useAuth();
 
   return (
     <View>
