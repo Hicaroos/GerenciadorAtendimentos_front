@@ -1,7 +1,17 @@
-import { TextInput, TextInputProps } from "react-native";
+import { CalendarDate } from "./CalendarDate";
+import { Default } from "./Default"
 
-import { styles } from "./styles";
-
-export function Input({ ...rest }: TextInputProps) {
-  return <TextInput style={styles.input} {...rest}></TextInput>;
+type BaseProps = {
+  padding?      : number ; 
+  borderRadius? : number ;
+  darkTheme?    : boolean;
+  onChange      : (date:string) => void;
+  hasLabel?     : boolean;
+  label?        : string ;
 }
+
+export type DateInputProps = BaseProps;
+
+export const Input = Object.assign(Default, {
+  CalendarDate,
+});

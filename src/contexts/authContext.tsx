@@ -5,11 +5,11 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { api } from "@/services/api";
 
 type AuthState = {
-  isAuthenticated: boolean;
-  isReady?: boolean;
-  login: (email: string, password: string) => Promise<void>;
-  logout: () => void;
-  role: "admin" | "user" | null;
+  isAuthenticated : boolean;
+  isReady?        : boolean;
+  login           : (email: string, password: string) => Promise<void>;
+  logout          : () => void;
+  role            : "admin" | "user" | null;
 };
 
 const AUTH_STORAGE_KEY = "@my-app:auth-state";
@@ -19,7 +19,7 @@ export const AuthContext = createContext<AuthState>({} as AuthState);
 export function AuthProvider({ children }: PropsWithChildren) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isReady, setIsReady] = useState(false);
-  const [role, setRole] = useState<"admin" | "user" | null>(null);
+  const [role, setRole]       = useState<AuthState['role']>(null);
 
   // async function login(email: string, password: string) {
   //   try {
@@ -51,15 +51,15 @@ export function AuthProvider({ children }: PropsWithChildren) {
       if (email === "admin@teste.com" && password === "123456") {
         mockResponse = {
           data: {
-            token: "fake-jwt-token-admin-123",
-            role: "admin",
+            token : "fake-jwt-token-admin-123",
+            role  : "admin",
           },
         };
       } else if (email === "user@teste.com" && password === "123456") {
         mockResponse = {
           data: {
-            token: "fake-jwt-token-user-456",
-            role: "user",
+            token : "fake-jwt-token-user-456",
+            role  : "user",
           },
         };
       } else {

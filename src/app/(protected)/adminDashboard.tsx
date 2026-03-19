@@ -5,9 +5,9 @@ import { View, Text, Button } from "react-native";
 export default function Index() {
   const { logout, role } = useAuth();
 
-  if (role !== "admin") {
-    return <Redirect href="/login" />;
-  }
+  // if (role !== "admin") {
+  //   return <Redirect href="/login" />;
+  // }
 
   return (
     <View>

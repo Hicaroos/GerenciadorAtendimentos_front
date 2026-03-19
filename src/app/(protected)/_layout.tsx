@@ -12,22 +12,26 @@ export default function ProtectedLayout() {
       />
     );
   }
-  if (!isAuthenticated) {
-    return <Redirect href={"/login"} />;
-  }
+
+  // if (!isAuthenticated) {
+  //   return <Redirect href={"/login"} />;
+  // }
+
   return (
     <Stack>
       <Stack.Screen
         name="userDashboard"
-        options={{ headerBackVisible: false }}
+        options={{ 
+          headerBackVisible : false, 
+          headerShown       : false, 
+        }}
       />
       <Stack.Screen
         name="adminDashboard"
-        options={{ headerBackVisible: false }}
-      />
-      <Stack.Screen
-        name="new-appointment"
-        options={{ presentation: "modal" }}
+        options={{ 
+          headerBackVisible : false, 
+          headerShown       : false, 
+        }}
       />
     </Stack>
   );

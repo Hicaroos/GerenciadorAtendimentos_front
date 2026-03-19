@@ -3,7 +3,7 @@ import { View, Text, Image, StyleSheet, Alert } from "react-native";
 import { Link } from "expo-router";
 
 import { Button } from "@/components/button";
-import { Input } from "@/components/input";
+import { Input } from '@/components/input';
 
 import { useAuth } from "@/hooks/useAuth";
 
@@ -34,9 +34,13 @@ export default function Index() {
           style={styles.image}
         />
       </View>
+
       <View style={styles.right}>
         <View style={styles.form}>
-          <Text style={styles.login}>Login</Text>
+          <Text style={styles.login}>
+            Login
+          </Text>
+
           <View style={styles.input}>
             <Input
               placeholder="Email"
@@ -45,6 +49,7 @@ export default function Index() {
               autoCapitalize="none"
               keyboardType="email-address"
             />
+
             <Input
               placeholder="Senha"
               secureTextEntry
@@ -52,8 +57,17 @@ export default function Index() {
               onChangeText={setPassword}
             />
           </View>
-          <Button title="Entrar" onPress={handleLogin} />
-          <Link href={"/register"}>Não tem uma conta? Cadastre-se aqui.</Link>
+
+          <Button 
+            fullWidth
+            filled
+            title="Entrar" 
+            onPress={handleLogin} 
+          />
+
+          <Link href={"/register"}>
+            Não tem uma conta? Cadastre-se aqui.
+          </Link>
         </View>
       </View>
     </View>
