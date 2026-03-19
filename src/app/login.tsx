@@ -1,27 +1,39 @@
-import { useState } from "react";
-import { View, Text, Image, StyleSheet, Alert } from "react-native";
-import { Link } from "expo-router";
+import { useState, useEffect } from "react";
+import { View, Text, Image, StyleSheet } from "react-native";
+import { Link, useLocalSearchParams } from "expo-router";
 
 import { Button } from "@/components/button";
-import { Input } from '@/components/input';
+import { Input } from "@/components/input";
 
 import { useAuth } from "@/hooks/useAuth";
 
 export default function Index() {
   const { login } = useAuth();
+  const params = useLocalSearchParams();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
+
+  useEffect(() => {
+    if (params.successMessage) {
+      setSuccessMessage(params.successMessage as string);
+    }
+  }, [params.successMessage]);
 
   const handleLogin = async () => {
+    setErrorMessage("");
+    setSuccessMessage("");
+
     if (!email || !password) {
-      Alert.alert("Erro", "Por favor, preencha o email e a senha.");
+      setErrorMessage("Por favor, preencha o email e a senha.");
       return;
     }
     try {
       await login(email, password);
     } catch (error) {
-      Alert.alert("Erro de Autenticação", "Email ou senha incorretos.");
+      setErrorMessage("Email ou senha incorretos.");
     }
   };
 
@@ -37,11 +49,9 @@ export default function Index() {
 
       <View style={styles.right}>
         <View style={styles.form}>
-          <Text style={styles.login}>
-            Login
-          </Text>
+          <Text style={styles.login}>Login</Text>
 
-          <View style={styles.input}>
+          <View style={styles.inputContainer}>
             <Input
               placeholder="Email"
               value={email}
@@ -58,14 +68,17 @@ export default function Index() {
             />
           </View>
 
-          <Button 
-            fullWidth
-            filled
-            title="Entrar" 
-            onPress={handleLogin} 
-          />
+          {successMessage ? (
+            <Text style={styles.successText}>{successMessage}</Text>
+          ) : null}
 
-          <Link href={"/register"}>
+          {errorMessage ? (
+            <Text style={styles.errorText}>{errorMessage}</Text>
+          ) : null}
+
+          <Button fullWidth filled title="Entrar" onPress={handleLogin} />
+
+          <Link href={"/register"} style={styles.linkText}>
             Não tem uma conta? Cadastre-se aqui.
           </Link>
         </View>
@@ -94,25 +107,40 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   form: {
-    flex: 1,
-    justifyContent: "center",
+    width: "60%",
+    gap: 30,
     alignItems: "center",
-    width: "50%",
-    gap: 80,
   },
   login: {
     color: "#1A5987",
     fontSize: 48,
     fontWeight: "bold",
+    marginBottom: 20,
   },
-
-  input: {
+  inputContainer: {
     width: "100%",
-    gap: 40,
+    gap: 20,
   },
   image: {
     justifyContent: "center",
     alignItems: "center",
     width: 550,
+  },
+  errorText: {
+    color: "#e74c3c",
+    fontSize: 14,
+    fontWeight: "bold",
+    textAlign: "center",
+    marginBottom: -10,
+  },
+  successText: {
+    color: "#2ecc71",
+    fontSize: 14,
+    fontWeight: "bold",
+    textAlign: "center",
+    marginBottom: -10,
+  },
+  linkText: {
+    marginTop: 10,
   },
 });
