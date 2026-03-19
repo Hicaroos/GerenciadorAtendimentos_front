@@ -16,6 +16,17 @@ export const styles = StyleSheet.create({
     borderColor: '#3E3C41',
     borderRadius: 8,
     padding: 8,
-    color: "white",
+    color: 'white',
+  },
+
+   input_container_dark: {
+    width: "100%",
+    backgroundColor: 'transparent',
+    borderWidth: 1.5,
+    borderColor: '#3E3C41',
+    borderRadius: 8,
+    flexDirection: 'row',
+    color: 'white',
+    gap: 8,
   },
 });

@@ -1,46 +1,165 @@
-import { Button } from "@/components/button";
-import { Input } from "@/components/input";
-import { Table } from "@/components/table/appointments";
+import { useState } from "react"; 
 import { useAuth } from "@/hooks/useAuth";
+import { Input } from "@/components/input";
+import { Modal } from "@/components/modal";
+import { Button } from "@/components/button";
+import { Toast } from "@/components/ui/Toast";
+import { ScrollView, Text, View } from "react-native";
+import { Table } from "@/components/table/appointments";
 import { AppointmentsList } from "@/types/appointmentsList";
-import { hoursOnly } from "@/utils/hoursOnly";
+import { yearMonthDayOnly } from "@/utils/yearMonthDayOnly";
+
+import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import Feather from '@expo/vector-icons/Feather';
-import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
-import { ScrollView, StyleSheet, Text, View } from "react-native";
-import { useState } from "react"; 
-import { Modal } from "@/components/modal";
+import Entypo from '@expo/vector-icons/Entypo';
+
+import { style } from "./style/userDashboard";
+
+// SIMULAÇÃO DE REQUISIÇÃO JSON DO BACK VIA GET ****(APAGAR DEPOIS)****
+const MORINIG_APPOINTMENTS_LIST : AppointmentsList[] = [
+  {date: '2026-03-20T15:00:00.000Z', id: 1, hour: '09:00', number: null, userName: 'Leony Leandro Barros'},
+  {date: '2026-03-19T15:00:00.000Z', id: 2, hour: '10:00', number: null, userName: 'Marcus Invanir Nunes Culau'},
+  {date: '2026-03-19T15:00:00.000Z', id: 3, hour: '11:00', number: null, userName: 'Eberth Matheus Pimenta'},
+];
+
+// SIMULAÇÃO DE REQUISIÇÃO JSON DO BACK VIA GET ****(APAGAR DEPOIS)****
+const AFTERNOON_APPOINTMENTS_LIST : AppointmentsList[] = [
+  {date: '2026-03-19T15:00:00.000Z', id: 4, hour: '13:00', number: null, userName: 'Leony Leandro Barros'},
+  {date: '2026-03-19T15:00:00.000Z', id: 5, hour: '14:00', number: null, userName: 'Marcus Invanir Nunes Culau'},
+  {date: '2026-03-19T15:00:00.000Z', id: 6, hour: '15:00', number: null, userName: 'Matheus Eberth Pimenta'},
+  {date: '2026-03-19T15:00:00.000Z', id: 7, hour: '16:00', number: null, userName: 'Leony Leandro Barros'},
+  {date: '2026-03-20T15:00:00.000Z', id: 8, hour: '17:00', number: null, userName: 'Marcus Invanir Nunes Culau'},
+  {date: '2026-03-20T15:00:00.000Z', id: 9, hour: '18:00', number: null, userName: 'Matheus Eberth Pimenta'},
+];
 
 export default function Index() {
 
   const { logout, role } = useAuth();
-  const [modalVisible, setModalVisible] = useState<boolean>(false)
 
-  const MORINIG_APPOINTMENTS_LIST : AppointmentsList[] = [
-    {id: 1, hour: '09:00', number: null, userName: 'Leony Leandro Barros'},
-    {id: 2, hour: '10:00', number: null, userName: 'Marcus Invanir Nunes Culau'},
-    {id: 3, hour: '11:00', number: null, userName: 'Eberth Matheus Pimenta'},
-  ];
+  const [modalVisible, setModalVisible] = useState<
+  | 'NEW_APPOINTMENT' 
+  | 'EDIT_APPOINTMENT' 
+  | 'REMOVE_APPOINTMENT_CONFIRM' 
+  | null
+  >(null);
 
-  const AFTERNOOM_APPOINTMENTS_LIST : AppointmentsList[] = [
-    {id: 4, hour: '13:00', number: null, userName: 'Leony Leandro Barros'},
-    {id: 5, hour: '14:00', number: null, userName: 'Marcus Invanir Nunes Culau'},
-    {id: 6, hour: '15:00', number: null, userName: 'Matheus Eberth Pimenta'},
-    {id: 7, hour: '16:00', number: null, userName: 'Leony Leandro Barros'},
-    {id: 8, hour: '17:00', number: null, userName: 'Marcus Invanir Nunes Culau'},
-    {id: 9, hour: '18:00', number: null, userName: 'Matheus Eberth Pimenta'},
-  ];
+  const [toastVisible, setToastVisible] = useState<{
+    message : string;
+    type    : 'success' | 'error';
+  } | null>(null);
+
+  const [todayDate, setTodayDate] = useState<string>(yearMonthDayOnly(new Date()));
+  const [processing, setProcessing] = useState<boolean>(false);
+
+  const [morningList, setMorningList] = useState<AppointmentsList[]>(MORINIG_APPOINTMENTS_LIST);
+  const [afternoonList, setAfternoonList] = useState<AppointmentsList[]>(AFTERNOON_APPOINTMENTS_LIST);
+
+  const [appointmentToBeEdit, setAppointmentToBeEdited] = useState<AppointmentsList | null>(null);
+  const [appointmentIdToBeRemoved, setAppointmentIdToBeRemoved] = useState<number | null>(null);
+
+  // Função que só atualiza ao vivo a tabela com novos agendamentos visualmente. 
+  // Os dados em sí devem ser inseridos no banco para persistirem.
+  const addNewAppointment = (newApp : AppointmentsList) => {
+    const hourInt = parseInt(newApp.hour.substring(0, 2));
+    
+    if (hourInt <= 12) {
+      setMorningList(prev => [...prev, newApp]);
+    } else {
+      setAfternoonList(prev => [...prev, newApp]);
+    }
+  };
+
+  const editAppointment = (updatedAppointmentData : AppointmentsList) => {
+    
+    const hourInt = parseInt(updatedAppointmentData.hour.substring(0, 2));
+    const isMorning = hourInt <= 12;
+
+    setMorningList(prev => prev.filter(item => item.id !== updatedAppointmentData.id));
+    setAfternoonList(prev => prev.filter(item => item.id !== updatedAppointmentData.id));
+    
+    if (isMorning) {
+      setMorningList(prev => [...prev, updatedAppointmentData]);
+    } else {
+      setAfternoonList(prev => [...prev, updatedAppointmentData]);
+    }
+
+    setAppointmentToBeEdited(null);
+  };
+
+  const handleRemoveAppointment = async(id : number) => {
+    if (processing) return;
+    setProcessing(true);
+
+    try {
+      // Lógica de remoção no back
+      setMorningList(prev => prev.filter(item => item.id !== id));
+      setAfternoonList(prev => prev.filter(item => item.id !== id));
+
+      setToastVisible({ message: 'Agendamento removido com sucesso!', type: 'success'});
+    } catch (error:any) {
+      console.error(error);
+      setToastVisible({message: `Houve um erro ao desagendar!: ${error}`, type: 'error'});
+    } finally {
+      setModalVisible(null);
+      setProcessing(false);
+    }
+  };
+
+  const morningAppointmentsListFilteredByDate : AppointmentsList[] = morningList
+    .filter((appointment) => yearMonthDayOnly(appointment.date) === todayDate)
+    .sort((a, b) => a.hour.localeCompare(b.hour)); 
+
+  const afternoonAppointmentsListFilteredByDate : AppointmentsList[] = afternoonList
+    .filter((appointment) => yearMonthDayOnly(appointment.date) === todayDate)
+    .sort((a, b) => a.hour.localeCompare(b.hour));
 
   return (
     <View style={style.wrapper_container}>
 
-      <Modal.NewAppointment
-        modalVisible={modalVisible}
-        onClose={() => { setModalVisible(false) }}
+      <Modal.AppointmentForm
+        modalVisible={modalVisible === 'NEW_APPOINTMENT'}
+        onClose={() => { setModalVisible(null)}}
+        onSuccess={{
+          updateList : (data) => addNewAppointment(data),
+          toast      : () => setToastVisible({message: 'Agendamento realizado com sucesso!', type: 'success'}),
+        }}
+        onFailure={() => setToastVisible({message: 'Houve um erro ao realizar o agendamento. Tente novamente mais tarde!', type: 'error'})}
         appointments={[
-          ...MORINIG_APPOINTMENTS_LIST, 
-          ...AFTERNOOM_APPOINTMENTS_LIST,
+          ...morningAppointmentsListFilteredByDate, 
+          ...afternoonAppointmentsListFilteredByDate,
         ]}
+      />
+
+      <Modal.AppointmentForm
+        modalVisible={modalVisible === 'EDIT_APPOINTMENT' && !!appointmentToBeEdit}
+        onClose={() => { setModalVisible(null)}}
+        onSuccess={{
+          updateList : (data) => editAppointment(data),
+          toast      : () => setToastVisible({message: 'Agendamento editado com sucesso!', type: 'success'}),
+        }}
+        onFailure={() => setToastVisible({message: 'Houve um erro ao editar o agendamento. Tente novamente mais tarde!', type: 'error'})}
+        appointments={[
+          ...morningAppointmentsListFilteredByDate, 
+          ...afternoonAppointmentsListFilteredByDate,
+        ]}
+        editAppointmentData={appointmentToBeEdit!}
+      />
+
+      <Modal.ConfirmAction
+        loading={processing}
+        message="Tem certeza em desagendar esse atendimento?"
+        title="Confirmar desegendamento"
+        modalVisible={modalVisible === 'REMOVE_APPOINTMENT_CONFIRM'}
+        onClose={() => setModalVisible(null)}
+        onConfirm={() => handleRemoveAppointment(appointmentIdToBeRemoved!)}
+      />
+
+      <Toast 
+        message={toastVisible?.message!} 
+        type={toastVisible?.type!}
+        visible={!!toastVisible} 
+        onClose={() => setToastVisible(null)} 
       />
 
       <View>
@@ -60,16 +179,27 @@ export default function Index() {
                 title="Novo"
                 iconFamily={AntDesign}
                 iconName="plus"
-                onPress={() => setModalVisible(true)}
+                onPress={() => setModalVisible('NEW_APPOINTMENT')}
               />
 
               <Input.CalendarDate 
                 darkTheme
-                onChange={(date) => console.log(date)}
+                onChange={(date) => {
+                  console.log(date);
+                  setTodayDate(yearMonthDayOnly(date));
+                }}
+              />
+
+              <Button.WithIcon
+                iconFamily={Entypo}
+                iconName="log-out"
+                title="Sair"
+                darkTheme
+                padding={1}
+                onPress={logout}
               />
             </View>
           </View>
-
 
           <View style={style.appointments_main_container}>
             <View style={style.appointments_container}>
@@ -93,7 +223,7 @@ export default function Index() {
               </View>
 
               <View style={style.appointments_list_table_container}>
-                {MORINIG_APPOINTMENTS_LIST.length > 0 ? (
+                {morningAppointmentsListFilteredByDate.length > 0 ? (
                   <>
                     <Table.Appointments.Header />
                     
@@ -102,33 +232,24 @@ export default function Index() {
                     contentContainerStyle={style.scroll_content_items}
                     showsVerticalScrollIndicator={false}
                     >
-                      {MORINIG_APPOINTMENTS_LIST.map((item, index) => (
-                        
-                        <>
-                          <Table.Appointments.Data
-                            key={item.id}
-                            id={item.id}
-                            hour={item.hour}
-                            userName={item.userName}
-                            number={item.number}
-                            onEdit={() => {
-                              console.log(`Editando agendamento ${item.id}`)
-                            }}
-                            onRemove={() => {
-                              console.log(`Removendo agendamento ${item.id}`)
-                            }}
-                          />
-
-                          {index !== MORINIG_APPOINTMENTS_LIST.length - 1 &&
-                            <View 
-                              style={{
-                                height: 1, 
-                                width: '100%', 
-                                backgroundColor: '#635f687a'
-                              }}
-                            />
-                          }
-                        </>
+                      {morningAppointmentsListFilteredByDate.map((item, index) => (                                            
+                        <Table.Appointments.Data
+                          key={item.id}
+                          hour={item.hour}
+                          userName={item.userName}
+                          number={item.number}
+                          lastItem={index !== morningAppointmentsListFilteredByDate.length - 1}
+                          onEdit={() => {
+                            console.log(`Editando agendamento ${item.id}`);
+                            setAppointmentToBeEdited(item);
+                            setModalVisible('EDIT_APPOINTMENT');
+                          }}
+                          onRemove={() => {
+                            console.log(`Removendo agendamento ${item.id}`);
+                            setAppointmentIdToBeRemoved(item.id);
+                            setModalVisible('REMOVE_APPOINTMENT_CONFIRM')
+                          }}
+                        />                       
                       ))}
                     </ScrollView>
                   </>
@@ -161,7 +282,7 @@ export default function Index() {
               </View>
 
               <View style={style.appointments_list_table_container}>
-                {AFTERNOOM_APPOINTMENTS_LIST.length > 0 ? (
+                {afternoonAppointmentsListFilteredByDate.length > 0 ? (
                   <>
                     <Table.Appointments.Header />
 
@@ -170,32 +291,24 @@ export default function Index() {
                     contentContainerStyle={style.scroll_content_items}
                     showsVerticalScrollIndicator={false}
                     >
-                      {AFTERNOOM_APPOINTMENTS_LIST.map((item, index) => (
-                        <>
-                          <Table.Appointments.Data
-                            key={item.id}
-                            id={item.id}
-                            hour={item.hour}
-                            userName={item.userName}
-                            number={item.number}
-                            onEdit={() => {
-                              console.log(`Editando agendamento ${item.id}`)
-                            }}
-                            onRemove={() => {
-                              console.log(`Removendo agendamento ${item.id}`)
-                            }}
-                          />
-
-                          {index !== AFTERNOOM_APPOINTMENTS_LIST.length - 1 &&
-                            <View 
-                              style={{
-                                height: 1, 
-                                width: '100%', 
-                                backgroundColor: '#635f687a'
-                              }}
-                            />
-                          }
-                        </>
+                      {afternoonAppointmentsListFilteredByDate.map((item, index) => (
+                        <Table.Appointments.Data
+                          key={item.id}
+                          hour={item.hour}
+                          userName={item.userName}
+                          number={item.number}
+                          lastItem={index !== afternoonAppointmentsListFilteredByDate.length - 1}
+                          onEdit={() => {
+                            console.log(`Editando agendamento ${item.id}`);
+                            setAppointmentToBeEdited(item);
+                            setModalVisible('EDIT_APPOINTMENT');
+                          }}
+                          onRemove={() => {
+                            console.log(`Removendo agendamento ${item.id}`);
+                            setAppointmentIdToBeRemoved(item.id);
+                            setModalVisible('REMOVE_APPOINTMENT_CONFIRM');
+                          }}
+                        />                     
                       ))}
                     </ScrollView>
                   </>              
@@ -213,94 +326,4 @@ export default function Index() {
   );
 }
 
-const style = StyleSheet.create({
-  wrapper_container: {
-    flex: 1,
-    backgroundColor: 'black',
-  },
 
-  scroll_content_container: {
-    maxHeight: 100,
-  },
-
-  scroll_content_items: {
-    gap: 8,
-  },
-
-  main_container: {
-    padding: 20,
-    width: '100%',
-    gap: 24,
-    alignSelf: 'center',
-    backgroundColor: 'black',
-    maxWidth: 1080,
-  },
-
-  header_title: {
-    color: 'white',
-    fontWeight: '700',
-    fontSize: 24,
-  },
-  
-  header_container: {
-    flexDirection  : 'row',
-    alignItems: 'center',
-    justifyContent : 'space-between',
-  },
-  
-  appointments_day_and_new_appointment_container: {
-    flexDirection: 'row',
-    gap: 8,
-  },
-
-  appointments_main_container: {
-    gap: 16,
-  },
-
-  appointments_container: {
-    borderWidth: 1.5,
-    borderColor: '#3E3C41',
-    borderRadius: 8,
-  },
-
-  appointments_period_label_container: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-
-  appointments_container_header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    borderBottomWidth: 1.5,
-    borderBottomColor: '#3E3C41',
-    paddingVertical: 6,
-    paddingHorizontal: 16,
-  },
-
-  text_color: {
-    color: '#9c97a4'
-  },
-
-  no_list_text_color: {
-    color: '#635f68',
-  },
-
-  appointments_list_table_container: {
-    paddingVertical: 10,
-    paddingBottom: 12,
-    paddingHorizontal: 16,
-    gap: 10,
-  },
-
-  appointments_list_table_row: {
-    flexDirection: 'row',
-  },
-});
-
-
- {/* <Button   
-          title="Sair" 
-          onPress={logout} 
-        /> */}

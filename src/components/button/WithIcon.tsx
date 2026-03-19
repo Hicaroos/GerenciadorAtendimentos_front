@@ -1,6 +1,7 @@
 import { TouchableOpacity, TouchableOpacityProps, Text } from "react-native";
 import { baseStyles, getButtonStyle } from './style';
 import { WithIconButtonProps } from ".";
+import Loading from "../ui/Loading";
 
 export function WithIcon({ 
   title, 
@@ -13,6 +14,8 @@ export function WithIcon({
   filled,
   iconSide = 'LEFT',
   textSize = 'MD',
+  processing,
+  processingLabel,
   darkTheme = false,
   ...rest 
 }: WithIconButtonProps) {
@@ -40,11 +43,18 @@ export function WithIcon({
     >
       {iconSide === 'LEFT' ? (
         <>
-          <Icon 
-            size={fontSize} 
-            color={buttonStyle.textColor} 
-            name={iconName}
-          />
+          {!processing ? (
+            <Icon 
+              size={fontSize} 
+              color={buttonStyle.textColor} 
+              name={iconName}
+            />
+          ) : (
+            <Loading
+              size="small"
+              color={buttonStyle.textColor}
+            />
+          )}
 
           <Text style={[
             baseStyles.title,
@@ -53,7 +63,7 @@ export function WithIcon({
               fontSize,
             }
           ]}>
-            {title}
+            {processing ? processingLabel : title}
           </Text>
         </>
       ) : (

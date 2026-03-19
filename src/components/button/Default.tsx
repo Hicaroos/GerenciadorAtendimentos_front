@@ -1,6 +1,8 @@
-import { TouchableOpacity, Text } from "react-native";
+import { TouchableOpacity, Text, Pressable } from "react-native";
 import { getButtonStyle, baseStyles } from "./style";
 import { DefaultButtonProps } from ".";
+import Loading from "../ui/Loading";
+import { useState } from "react";
 
 export function Default({ 
   title, 
@@ -11,42 +13,62 @@ export function Default({
   fullWidth = false,
   textSize = 'MD',
   darkTheme = false,
+  processing,
+  processingLabel,
   unable,
   ...rest 
 }: DefaultButtonProps) {
 
   const buttonStyle = getButtonStyle(filled ?? false, darkTheme);
   const fontSize = textSize === 'MD' ? 16 : textSize === 'LG' ? 24 : 12;
+  const [isHovered, setIsHovered] = useState<boolean>(false);
 
   return (
-    <TouchableOpacity 
+    <Pressable 
     activeOpacity={0.8} 
-    style={[
+    onHoverIn={() => setIsHovered(true)}
+    onHoverOut={() => setIsHovered(false)}
+    disabled={unable || processing}
+    style={({pressed}) => [
         baseStyles.button,
         { 
           padding, 
           gap: gapAdjust,
           borderRadius, 
           paddingHorizontal : 20,
-          backgroundColor   : buttonStyle.backgroundColor,
+          backgroundColor : pressed 
+            ? (darkTheme ? "#444" : "#124063") 
+          : isHovered 
+            ? (darkTheme ? "#333" : "#2171ad") 
+          : buttonStyle.backgroundColor,
           borderWidth       : buttonStyle.borderWidth,
           borderColor       : buttonStyle.borderColor,
           width             : fullWidth ? '100%' : 'auto',
           opacity           : unable ? 0.3 : 1,
+          flexDirection     : 'row',
+          alignItems        : 'center',
+          justifyContent    : 'center',
         },
       ]}
     {...rest}
     >
+      {processing &&
+        <Loading
+          size="small"
+          color="#fff"
+        />
+      }
+
       <Text style={[
         baseStyles.title,
         { 
           color    : buttonStyle.textColor,
           fontSize,
         }
-      ]}> 
-        {title}
+      ]}>     
+        {processing ? processingLabel : title}
       </Text>
-    </TouchableOpacity>
+    </Pressable>
   );
 }
 

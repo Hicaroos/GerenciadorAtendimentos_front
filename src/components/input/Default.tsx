@@ -1,17 +1,13 @@
-import { TextInput, TextInputProps, View, Text, StyleSheet } from "react-native";
+import { TextInput, View, Text, StyleSheet } from "react-native";
 
 import { styles } from './styles';
-
-type Props = TextInputProps & {
-  hasLabel : boolean;
-  label    : string;
-}
+import { DefaultInputProps } from ".";
 
 export function Default({ 
   hasLabel,
   label,
   ...rest
-}: Props) {
+}: DefaultInputProps) {
   if (!hasLabel) {
     return <TextInput 
       style={styles.input} 

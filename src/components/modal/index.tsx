@@ -1,5 +1,7 @@
-import NewAppointment from "./NewAppointment";
+import AppointmentForm from "./Appointment";
+import ConfirmAction from "./ConfirmAction";
 
 export const Modal = {
-  NewAppointment,
+  AppointmentForm,
+  ConfirmAction,
 }

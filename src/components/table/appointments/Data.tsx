@@ -6,9 +6,10 @@ import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import { AppointmentsList } from '@/types/appointmentsList';
 
-type Props = AppointmentsList & {
+type Props = Omit<AppointmentsList, 'id' | 'date'> & {
   onEdit   : () => void;
   onRemove : () => void;
+  lastItem : boolean;
 }
 
 const Data = ({
@@ -17,57 +18,70 @@ const Data = ({
   userName,
   onEdit,
   onRemove,
+  lastItem,
 }:Props) => {
   return (
-    <View style={style.appointments_list_table_row}>
-      <Text style={style.appointments_list_table_hour_column}>
-        {hour}
-      </Text>
+    <>
+      <View style={style.appointments_list_table_row}>
+        <Text style={style.appointments_list_table_hour_column}>
+          {hour}
+        </Text>
 
-      <Text style={style.appointments_list_table_name_column}>
-        {userName}
-      </Text>
+        <Text style={style.appointments_list_table_name_column}>
+          {userName}
+        </Text>
 
-      <Text style={style.appointments_list_table_number_column}>
-        {number}
-      </Text>
+        <Text style={style.appointments_list_table_number_column}>
+          {number}
+        </Text>
 
-      <View style={style.appointments_list_table_crud_actions_column}>
-        <Pressable 
-          style={({ pressed, hovered }: any) => [
-            style.action_button,
-              hovered && style.button_hover,
+        <View style={style.appointments_list_table_crud_actions_column}>
+          <Pressable 
+            style={({ pressed, hovered }: any) => [
+              style.action_button,
+                hovered && style.button_hover,
+                pressed && style.button_active
+            ]}
+            onPress={onEdit}
+          >
+            {({ hovered }: any) => (
+              <MaterialCommunityIcons 
+                name="pencil" 
+                size={16} 
+                color={hovered ? "orange" : "#1A5987"} 
+              />
+            )}
+          </Pressable>
+
+          <Pressable 
+            style={({ pressed, hovered }: any) => [
+              style.action_button,
+              hovered && style.delete_button_hover,
               pressed && style.button_active
-          ]}
-          onPress={onEdit}
-        >
-          {({ hovered }: any) => (
-            <MaterialCommunityIcons 
-              name="pencil" 
-              size={16} 
-              color={hovered ? "orange" : "#1A5987"} 
-            />
-          )}
-        </Pressable>
-
-        <Pressable 
-          style={({ pressed, hovered }: any) => [
-            style.action_button,
-            hovered && style.delete_button_hover,
-            pressed && style.button_active
-          ]}
-          onPress={onRemove}
-        >
-          {({ hovered }: any) => (
-            <FontAwesome6 
-              name="trash-alt" 
-              size={16} 
-              color={hovered ? "#ff4d4d" : "#1A5987"} 
-            />
-          )}
-        </Pressable>
+            ]}
+            onPress={onRemove}
+          >
+            {({ hovered }: any) => (
+              <FontAwesome6 
+                name="trash-alt" 
+                size={16} 
+                color={hovered ? "#ff4d4d" : "#1A5987"} 
+              />
+            )}
+          </Pressable>
+        </View>
       </View>
-    </View>
+      
+      {lastItem && (
+        <View                               
+          style={{
+            height: 1.5, 
+            width: '100%', 
+            backgroundColor: '#635f687a'
+          }}
+        />
+      )}
+    </>
   )
 }
 

@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, StyleSheet, Modal } from 'react-native';
 import { Calendar, LocaleConfig } from 'react-native-calendars';
 import Entypo from '@expo/vector-icons/Entypo';
 import { DateInputProps } from '.';
+import { yearMonthDayOnly } from '@/utils/yearMonthDayOnly';
 
 LocaleConfig.locales['pt-br'] = {
   monthNames: ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'],
@@ -19,6 +20,7 @@ export const CalendarDate = ({
   darkTheme = false,
   hasLabel = false,
   label,
+  inputValue,
   onChange,
 }:DateInputProps) => {
   const [date, setDate] = useState(new Date());
@@ -49,8 +51,7 @@ export const CalendarDate = ({
           styles.input, 
           { padding, 
             borderRadius, 
-            borderColor: darkTheme ? '#3E3C41' : '#1A5987'
-             
+            borderColor: darkTheme ? '#3E3C41' : '#1A5987'        
           }
         ]} 
         onPress={() => setShowModal(true)}
@@ -65,7 +66,7 @@ export const CalendarDate = ({
             styles.text, 
             darkTheme && { color: '#c0c0c0' }
           ]}>
-            {date.toLocaleDateString('pt-BR')}
+            {inputValue ? yearMonthDayOnly(inputValue, true) : date.toLocaleDateString('pt-BR')}
           </Text>
 
           <Entypo 
@@ -92,7 +93,10 @@ export const CalendarDate = ({
               current={selectedString}
               onDayPress={(day: any) => handleConfirm(day)}
               markedDates={{
-                [selectedString]: { selected: true, selectedColor: '#1A5987' }
+                [selectedString]: { 
+                  selected: true, 
+                  selectedColor: '#1A5987' 
+                }
               }}
               theme={{
                 backgroundColor: '#1A1A1A',
