@@ -1,4 +1,5 @@
 import { router } from "expo-router";
+import { jwtDecode } from "jwt-decode";
 
 import { createContext, PropsWithChildren, useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -7,9 +8,9 @@ import { api } from "@/services/api";
 type AuthState = {
   isAuthenticated: boolean;
   isReady?: boolean;
-  login: (email: string, password: string) => Promise<void>;
+  login: (username: string, password: string) => Promise<void>;
   logout: () => void;
-  role: "admin" | "user" | null;
+  role: "ROLE_ADMIN" | "ROLE_USER" | null;
 };
 
 const AUTH_STORAGE_KEY = "@my-app:auth-state";
@@ -21,23 +22,31 @@ export function AuthProvider({ children }: PropsWithChildren) {
   const [isReady, setIsReady] = useState(false);
   const [role, setRole] = useState<AuthState["role"]>(null);
 
-  async function login(email: string, password: string) {
+async function login(username: string, password: string) {
     try {
-      const response = await api.post("/login", { email, password });
-      const { token, role: userRole } = response.data;
-      const authState = JSON.stringify({ token, role: userRole });
+      const response = await api.post("/auth/login", { username, password });
+      const { accessToken } = response.data; 
 
+      const decodedToken: any = jwtDecode(accessToken);
+      console.log(decodedToken);
+      const userRole = decodedToken.scope?.includes("ROLE_ADMIN") 
+        ? "ROLE_ADMIN" 
+        : "ROLE_USER";
+
+      const authState = JSON.stringify({ accessToken, role: userRole });
+      console.log(authState)
       await AsyncStorage.setItem(AUTH_STORAGE_KEY, authState);
 
       setIsAuthenticated(true);
       setRole(userRole);
-      if (userRole === "admin") {
+      
+      if (userRole === "ROLE_ADMIN") {
         router.replace("/(protected)/adminDashboard");
       } else {
         router.replace("/(protected)/userDashboard");
       }
     } catch (error) {
-      console.error("Erro na API de login:", error);
+      console.error("Erro no login:", error);
       throw error;
     }
   }
@@ -54,7 +63,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
         const storedState = await AsyncStorage.getItem(AUTH_STORAGE_KEY);
         const state = storedState ? JSON.parse(storedState) : null;
 
-        if (state?.token && state?.role) {
+        if (state?.accessToken && state?.role) {
           setIsAuthenticated(true);
           setRole(state.role);
         } else {

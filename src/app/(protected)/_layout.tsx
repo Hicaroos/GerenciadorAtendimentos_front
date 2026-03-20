@@ -13,9 +13,9 @@ export default function ProtectedLayout() {
     );
   }
 
-  // if (!isAuthenticated) {
-  //   return <Redirect href={"/login"} />;
-  // }
+  if (!isAuthenticated) {
+    return <Redirect href={"/login"} />;
+  }
 
   return (
     <Stack>

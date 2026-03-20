@@ -7,8 +7,7 @@ import { Input } from "@/components/input";
 import { api } from "@/services/api";
 
 export default function Register() {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
@@ -17,7 +16,7 @@ export default function Register() {
   const handleRegister = async () => {
     setMessage("");
 
-    if (!name || !email || !password || !confirmPassword) {
+    if (!username || !password || !confirmPassword) {
       setMessage("Por favor, preencha todos os campos.");
       return;
     }
@@ -28,10 +27,10 @@ export default function Register() {
     }
 
     try {
-      await api.post("/register", {
-        nome: name,
-        email: email,
-        senha: password,
+      await api.post("/auth/register", {
+        username: username,
+        password: password,
+        role: "ROLE_USER",
       });
 
       router.replace({
@@ -62,16 +61,9 @@ export default function Register() {
 
           <View style={styles.inputContainer}>
             <Input
-              placeholder="Nome Completo"
-              value={name}
-              onChangeText={setName}
-            />
-
-            <Input
-              placeholder="Email"
-              value={email}
-              onChangeText={setEmail}
-              autoCapitalize="none"
+              placeholder="Nome de usuário"
+              value={username}
+              onChangeText={setUsername}
             />
 
             <Input

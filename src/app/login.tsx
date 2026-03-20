@@ -11,7 +11,7 @@ export default function Index() {
   const { login } = useAuth();
   const params = useLocalSearchParams();
 
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
@@ -26,14 +26,14 @@ export default function Index() {
     setErrorMessage("");
     setSuccessMessage("");
 
-    if (!email || !password) {
-      setErrorMessage("Por favor, preencha o email e a senha.");
+    if (!username || !password) {
+      setErrorMessage("Por favor, preencha o nome e a senha.");
       return;
     }
     try {
-      await login(email, password);
+      await login(username, password);
     } catch (error) {
-      setErrorMessage("Email ou senha incorretos.");
+      setErrorMessage("Usuário ou senha incorretos.");
     }
   };
 
@@ -53,11 +53,9 @@ export default function Index() {
 
           <View style={styles.inputContainer}>
             <Input
-              placeholder="Email"
-              value={email}
-              onChangeText={setEmail}
-              autoCapitalize="none"
-              keyboardType="email-address"
+              placeholder="Nome de usuário"
+              value={username}
+              onChangeText={setUsername}
             />
 
             <Input
