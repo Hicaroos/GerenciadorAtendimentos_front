@@ -10,7 +10,7 @@ type AuthState = {
   isReady?: boolean;
   login: (username: string, password: string) => Promise<void>;
   logout: () => void;
-  role: "ROLE_ADMIN" | "ROLE_USER" | null;
+  role: "ROLE_TEACHER" | "ROLE_STUDENT" | null;
 };
 
 const AUTH_STORAGE_KEY = "@my-app:auth-state";
@@ -22,25 +22,25 @@ export function AuthProvider({ children }: PropsWithChildren) {
   const [isReady, setIsReady] = useState(false);
   const [role, setRole] = useState<AuthState["role"]>(null);
 
-async function login(username: string, password: string) {
+  async function login(username: string, password: string) {
     try {
       const response = await api.post("/auth/login", { username, password });
-      const { accessToken } = response.data; 
+      const { accessToken } = response.data;
 
       const decodedToken: any = jwtDecode(accessToken);
       console.log(decodedToken);
-      const userRole = decodedToken.scope?.includes("ROLE_ADMIN") 
-        ? "ROLE_ADMIN" 
-        : "ROLE_USER";
+      const userRole = decodedToken.scope?.includes("ROLE_TEACHER")
+        ? "ROLE_TEACHER"
+        : "ROLE_STUDENT";
 
       const authState = JSON.stringify({ accessToken, role: userRole });
-      console.log(authState)
+      console.log(authState);
       await AsyncStorage.setItem(AUTH_STORAGE_KEY, authState);
 
       setIsAuthenticated(true);
       setRole(userRole);
-      
-      if (userRole === "ROLE_ADMIN") {
+
+      if (userRole === "ROLE_TEACHER") {
         router.replace("/(protected)/adminDashboard");
       } else {
         router.replace("/(protected)/userDashboard");

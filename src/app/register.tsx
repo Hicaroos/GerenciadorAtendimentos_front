@@ -30,7 +30,6 @@ export default function Register() {
       await api.post("/auth/register", {
         username: username,
         password: password,
-        role: "ROLE_USER",
       });
 
       router.replace({
