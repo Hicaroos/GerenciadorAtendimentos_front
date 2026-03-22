@@ -10,6 +10,8 @@ type AuthState = {
   isReady?: boolean;
   login: (username: string, password: string) => Promise<void>;
   logout: () => void;
+  
+  username: string | null;
   role: "ROLE_TEACHER" | "ROLE_STUDENT" | null;
 };
 
@@ -20,23 +22,43 @@ export const AuthContext = createContext<AuthState>({} as AuthState);
 export function AuthProvider({ children }: PropsWithChildren) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isReady, setIsReady] = useState(false);
+
+  const [username, setUsername] = useState<string | null>(null);
   const [role, setRole] = useState<AuthState["role"]>(null);
 
   async function login(username: string, password: string) {
     try {
-      const response = await api.post("/auth/login", { username, password });
+      const response = await api.post("/auth/login", { 
+        username, 
+        password 
+      });
+
       const { accessToken } = response.data;
 
       const decodedToken: any = jwtDecode(accessToken);
+
       console.log(decodedToken);
+
       const userRole = decodedToken.scope?.includes("ROLE_TEACHER")
         ? "ROLE_TEACHER"
         : "ROLE_STUDENT";
 
-      const authState = JSON.stringify({ accessToken, role: userRole });
-      console.log(authState);
-      await AsyncStorage.setItem(AUTH_STORAGE_KEY, authState);
+      const usernameFromToken = decodedToken.sub;
 
+      const authState = JSON.stringify({ 
+        accessToken, 
+        role     : userRole,
+        username : usernameFromToken, 
+      });
+
+      console.log(authState);
+
+      await AsyncStorage.setItem(
+        AUTH_STORAGE_KEY, 
+        authState
+      );
+
+      setUsername(usernameFromToken);
       setIsAuthenticated(true);
       setRole(userRole);
 
@@ -44,7 +66,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
         router.replace("/(protected)/adminDashboard");
       } else {
         router.replace("/(protected)/userDashboard");
-      }
+      }  
     } catch (error) {
       console.error("Erro no login:", error);
       throw error;
@@ -54,9 +76,11 @@ export function AuthProvider({ children }: PropsWithChildren) {
   function logout() {
     setIsAuthenticated(false);
     setRole(null);
+    setUsername(null);
     AsyncStorage.removeItem(AUTH_STORAGE_KEY);
     router.replace("/login");
   }
+
   useEffect(() => {
     async function loadStorageState() {
       try {
@@ -66,10 +90,12 @@ export function AuthProvider({ children }: PropsWithChildren) {
         if (state?.accessToken && state?.role) {
           setIsAuthenticated(true);
           setRole(state.role);
+          setUsername(state.username);
         } else {
           setIsAuthenticated(false);
         }
-      } catch (error) {
+      } catch (error:any) {
+        console.error(error);
         setIsAuthenticated(false);
       } finally {
         setIsReady(true);
@@ -81,7 +107,14 @@ export function AuthProvider({ children }: PropsWithChildren) {
 
   return (
     <AuthContext.Provider
-      value={{ isAuthenticated, login, logout, isReady, role }}
+    value={{ 
+      role, 
+      isReady, 
+      username,
+      isAuthenticated, 
+      logout, 
+      login, 
+    }}
     >
       {children}
     </AuthContext.Provider>

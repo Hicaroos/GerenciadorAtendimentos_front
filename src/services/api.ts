@@ -9,11 +9,14 @@ export const api = axios.create({
 
 api.interceptors.request.use(async (config) => {
   const storedState = await AsyncStorage.getItem(AUTH_STORAGE_KEY);
-  if (storedState) {
+
+  if (storedState && !config.url?.includes("/auth")) {
     const { accessToken } = JSON.parse(storedState);
+
     if (accessToken) {
       config.headers.Authorization = `Bearer ${accessToken}`;
     }
   }
+
   return config;
 });

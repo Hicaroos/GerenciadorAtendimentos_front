@@ -15,6 +15,7 @@ import Feather from '@expo/vector-icons/Feather';
 import Entypo from '@expo/vector-icons/Entypo';
 
 import { style } from "./style/userDashboard";
+import { Redirect } from "expo-router";
 
 // SIMULAÇÃO DE REQUISIÇÃO JSON DO BACK VIA GET ****(APAGAR DEPOIS)****
 const MORINIG_APPOINTMENTS_LIST : AppointmentsList[] = [
@@ -35,7 +36,11 @@ const AFTERNOON_APPOINTMENTS_LIST : AppointmentsList[] = [
 
 export default function Index() {
 
-  const { logout, role } = useAuth();
+  const { logout, role, username } = useAuth();
+
+  if (role !== "ROLE_STUDENT") {
+    return <Redirect href="/(protected)/adminDashboard" />;
+  }
 
   const [modalVisible, setModalVisible] = useState<
   | 'NEW_APPOINTMENT' 
@@ -166,7 +171,7 @@ export default function Index() {
         <View style={style.main_container}>
           <View style={style.header_container}>
             <Text style={style.header_title}>
-              Sua Agenda
+              Sua Agenda 
             </Text>
 
             <View style={style.appointments_day_and_new_appointment_container}>

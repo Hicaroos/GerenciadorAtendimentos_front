@@ -35,9 +35,9 @@ const AFTERNOON_APPOINTMENTS_LIST : AppointmentsList[] = [
 export default function Index() {
   const { logout, role } = useAuth();
 
-  // if (role !== "admin") {
-  //   return <Redirect href="/login" />;
-  // }
+  if (role !== "ROLE_TEACHER") {
+    return <Redirect href="/(protected)/userDashboard" />;
+  }
 
   const [modalVisible, setModalVisible] = useState<
   | 'NEW_APPOINTMENT' 

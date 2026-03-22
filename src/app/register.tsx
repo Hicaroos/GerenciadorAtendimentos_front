@@ -7,13 +7,13 @@ import { Input } from "@/components/input";
 import { api } from "@/services/api";
 
 export default function Register() {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+  const [username, setUsername] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const [confirmPassword, setConfirmPassword] = useState<string>("");
 
-  const [message, setMessage] = useState("");
+  const [message, setMessage] = useState<string>("");
 
-  const handleRegister = async () => {
+  const handleRegister = async() => {
     setMessage("");
 
     if (!username || !password || !confirmPassword) {
@@ -28,8 +28,8 @@ export default function Register() {
 
     try {
       await api.post("/auth/register", {
-        username: username,
-        password: password,
+        username,
+        password,
       });
 
       router.replace({
