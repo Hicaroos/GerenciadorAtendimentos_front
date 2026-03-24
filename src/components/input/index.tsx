@@ -16,7 +16,9 @@ export type DateInputProps = BaseProps & {
   onChange : (date:string) => void;
 };
 
-export type DefaultInputProps = BaseProps & TextInputProps;
+export type DefaultInputProps = BaseProps & TextInputProps & {
+  bgTransparent?: boolean;
+};
 
 export const Input = Object.assign(Default, {
   CalendarDate,

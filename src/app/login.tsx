@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
-import { View, Text, Image, StyleSheet } from "react-native";
-import { Link, useLocalSearchParams } from "expo-router";
-
+import { View, Text, Image, StyleSheet, TouchableOpacity } from "react-native";
+import { Link, router, useLocalSearchParams } from "expo-router";
 import { Button } from "@/components/button";
+import { Pressable } from "react-native";
 import { Input } from "@/components/input";
 
 import { useAuth } from "@/hooks/useAuth";
@@ -11,14 +11,17 @@ export default function Index() {
   const { login } = useAuth();
   const params = useLocalSearchParams();
 
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [errorMessage, setErrorMessage] = useState("");
-  const [successMessage, setSuccessMessage] = useState("");
+  const [username, setUsername] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const [errorMessage, setErrorMessage] = useState<string>("");
+  const [successMessage, setSuccessMessage] = useState<string>("");
+
+  const [tabSelected, setTabSelected] = useState<'STUDENT' | 'PROFESSOR'>('STUDENT');
 
   useEffect(() => {
     if (params.successMessage) {
       setSuccessMessage(params.successMessage as string);
+      router.setParams({ successMessage: "" });
     }
   }, [params.successMessage]);
 
@@ -41,9 +44,9 @@ export default function Index() {
     <View style={styles.container}>
       <View style={styles.left}>
         <Image
-          source={require("@/assets/images/LogoUnifap.png")}
-          resizeMode="contain"
-          style={styles.image}
+          source={require('@/assets/images/academicLogo.svg')}
+          style={{ width: 500, height: 500 }}
+          resizeMode="contain" 
         />
       </View>
 
@@ -51,34 +54,59 @@ export default function Index() {
         <View style={styles.form}>
           <Text style={styles.login}>Login</Text>
 
+          <View style={styles.switch_tab_buttons_container}>
+            <Pressable 
+            style={tabSelected === 'STUDENT' ? styles.selected_switch_tab_button : styles.unselected_switch_tab_button}
+            onPress={() => setTabSelected('STUDENT')}
+            >
+              <Text style={tabSelected === 'STUDENT' ? styles.selected_switch_tab_button_text : styles.unselected_switch_tab_button_text}>
+                Aluno
+              </Text>
+            </Pressable>     
+
+            <Pressable 
+            style={tabSelected === 'PROFESSOR' ? styles.selected_switch_tab_button : styles.unselected_switch_tab_button}
+            onPress={() => setTabSelected('PROFESSOR')}
+            >
+              <Text style={tabSelected === 'PROFESSOR' ? styles.selected_switch_tab_button_text : styles.unselected_switch_tab_button_text}>
+                Professor
+              </Text>
+            </Pressable>      
+          </View>
+
           <View style={styles.inputContainer}>
             <Input
-              placeholder="Nome de usuário"
+              hasLabel
+              label="Nome"
+              bgTransparent
               value={username}
               onChangeText={setUsername}
             />
 
             <Input
-              placeholder="Senha"
+              hasLabel
+              bgTransparent
+              label="Senha"
               secureTextEntry
               value={password}
               onChangeText={setPassword}
             />
           </View>
 
-          {successMessage ? (
-            <Text style={styles.successText}>{successMessage}</Text>
-          ) : null}
+          {!!successMessage && <Text style={styles.successText}>{successMessage}</Text>}
 
-          {errorMessage ? (
-            <Text style={styles.errorText}>{errorMessage}</Text>
-          ) : null}
+          {!!errorMessage && <Text style={styles.errorText}>{errorMessage}</Text>}
 
           <Button fullWidth filled title="Entrar" onPress={handleLogin} />
 
-          <Link href={"/register"} style={styles.linkText}>
-            Não tem uma conta? Cadastre-se aqui.
-          </Link>
+          <View style={{ flexDirection: 'row', alignSelf: 'flex-end' }}>
+            <Text style={{ color: '#919191' }}>Não possui uma conta? </Text>
+            <Link href="/register" asChild>
+              <Text style={{ color: '#0f0f0f', fontWeight: 'bold' }}>
+                Cadastre-se!
+              </Text>
+            </Link>
+          </View>       
         </View>
       </View>
     </View>
@@ -90,55 +118,88 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: "row",
     justifyContent: "center",
-    padding: 20,
   },
+
   left: {
-    backgroundColor: "#1A5987",
-    borderRadius: 10,
+    backgroundColor: "#5561D7",
     flex: 45,
     justifyContent: "center",
     alignItems: "center",
   },
+
   right: {
     flex: 55,
     justifyContent: "center",
     alignItems: "center",
   },
+
   form: {
     width: "60%",
-    gap: 30,
-    alignItems: "center",
+    gap: 24,
   },
+
   login: {
-    color: "#1A5987",
+    color: "#5561D7",
     fontSize: 48,
     fontWeight: "bold",
     marginBottom: 20,
+    alignSelf: 'center',
   },
+
   inputContainer: {
     width: "100%",
     gap: 20,
   },
+
   image: {
     justifyContent: "center",
     alignItems: "center",
     width: 550,
   },
+
   errorText: {
     color: "#e74c3c",
     fontSize: 14,
     fontWeight: "bold",
     textAlign: "center",
-    marginBottom: -10,
   },
+
   successText: {
     color: "#2ecc71",
     fontSize: 14,
     fontWeight: "bold",
     textAlign: "center",
-    marginBottom: -10,
   },
-  linkText: {
-    marginTop: 10,
+
+  switch_tab_buttons_container: {
+    flexDirection: 'row',
+  },
+
+  unselected_switch_tab_button: {
+    borderBottomWidth: 1,
+    borderBottomColor: '#656565',
+    padding: 20,
+    flex: 1,
+  },
+
+  unselected_switch_tab_button_text: {
+    fontWeight: 'bold',
+    color: '#656565',
+    fontSize: 16,
+    textAlign: 'center',
+  },
+
+  selected_switch_tab_button: {
+    borderBottomWidth: 4,
+    borderBottomColor: '#5561D7',
+    padding: 20,
+    flex: 1,
+  },
+
+  selected_switch_tab_button_text: {
+    fontWeight: 'bold',
+    color: '#5561D7',
+    fontSize: 16,
+    textAlign: 'center',
   },
 });

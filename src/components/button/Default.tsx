@@ -39,7 +39,7 @@ export function Default({
           backgroundColor : pressed 
             ? (darkTheme ? "#444" : "#124063") 
           : isHovered 
-            ? (darkTheme ? "#333" : "#2171ad") 
+            ? (darkTheme ? "#333" : "#5561D7") 
           : buttonStyle.backgroundColor,
           borderWidth       : buttonStyle.borderWidth,
           borderColor       : buttonStyle.borderColor,

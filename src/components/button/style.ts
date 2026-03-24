@@ -10,10 +10,10 @@ export const getButtonStyle = (
   borderWidth: 1.5,
   borderColor: "#3E3C41",
 } : { 
-  backgroundColor: filled ? "#1A5987" : "white",
-  textColor: filled ? "#fff" : "#1A5987",
+  backgroundColor: filled ? "#5561D7" : "white",
+  textColor: filled ? "#fff" : "#5561D7",
   borderWidth: 1,
-  borderColor: "#1A5987",
+  borderColor: "#5561D7",
 });
 
 export const baseStyles = StyleSheet.create({

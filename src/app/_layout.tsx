@@ -1,6 +1,9 @@
 import { Stack } from "expo-router";
+import { LogBox } from 'react-native';
 
 import { AuthProvider } from "@/contexts/authContext";
+
+LogBox.ignoreAllLogs();
 
 export default function Layout() {
   return (

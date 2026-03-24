@@ -6,25 +6,37 @@ import { DefaultInputProps } from ".";
 export function Default({ 
   hasLabel,
   label,
+  bgTransparent,
   ...rest
 }: DefaultInputProps) {
   if (!hasLabel) {
     return <TextInput 
       style={styles.input} 
       {...rest}
-    ></TextInput>
+    />
   }
 
   return (
     <View style={{gap: 6}}>
-      <Text style={{ color: '#c0c0c0', fontWeight: 'bold' }}>
+      <Text style={[
+        bgTransparent ? {
+          color: '#5561D7'
+        } : {
+          color: '#c0c0c0'
+        }, {
+          fontWeight: 'bold' 
+        }
+      ]}>
         {label}
       </Text>
 
       <TextInput 
-        style={styles.input_dark} 
+        style={bgTransparent 
+          ? styles.input_bg_transparent 
+          : styles.input_dark
+        } 
         {...rest}
-      ></TextInput>
+      />
     </View>
   )
 }

@@ -48,45 +48,58 @@ export default function Register() {
     <View style={styles.container}>
       <View style={styles.left}>
         <Image
-          source={require("@/assets/images/LogoUnifap.png")}
-          resizeMode="contain"
-          style={styles.image}
+          source={require('@/assets/images/academicLogo.svg')}
+          style={{ width: 500, height: 500 }}
+          resizeMode="contain" 
         />
       </View>
 
       <View style={styles.right}>
         <View style={styles.form}>
-          <Text style={styles.title}>Cadastro</Text>
+          <Text style={styles.title}>
+            Cadastro
+          </Text>
 
           <View style={styles.inputContainer}>
             <Input
-              placeholder="Nome de usuário"
+              hasLabel
+              label="Nome"
+              bgTransparent
               value={username}
               onChangeText={setUsername}
             />
 
             <Input
-              placeholder="Senha"
+              hasLabel
+              bgTransparent
+              label="Senha"
               secureTextEntry
               value={password}
               onChangeText={setPassword}
             />
 
             <Input
-              placeholder="Confirmar Senha"
+              hasLabel
+              bgTransparent
+              label="Confirmar senha"
               secureTextEntry
               value={confirmPassword}
               onChangeText={setConfirmPassword}
             />
           </View>
 
-          {message ? <Text style={styles.errorText}>{message}</Text> : null}
+          {!!message && <Text style={styles.errorText}>{message}</Text>}
+
+          <View style={{ flexDirection: 'row', alignSelf: 'flex-end' }}>
+            <Text style={{ color: '#919191' }}>Já possui conta? </Text>
+            <Link href="/login" asChild>
+              <Text style={{ color: '#5561D7', fontWeight: 'bold' }}>
+                Entre!
+              </Text>
+            </Link>
+          </View>  
 
           <Button fullWidth filled title="Cadastrar" onPress={handleRegister} />
-
-          <Link href={"/login"} style={styles.linkText}>
-            Já tem uma conta? Voltar para o Login.
-          </Link>
         </View>
       </View>
     </View>
@@ -98,48 +111,49 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: "row",
     justifyContent: "center",
-    padding: 20,
   },
+
   left: {
-    backgroundColor: "#1A5987",
-    borderRadius: 10,
+    backgroundColor: "#5561D7",
     flex: 45,
     justifyContent: "center",
     alignItems: "center",
   },
+
   right: {
     flex: 55,
     justifyContent: "center",
     alignItems: "center",
   },
+
   form: {
     width: "60%",
-    gap: 30,
-    alignItems: "center",
+    gap: 20,
   },
+
   title: {
-    color: "#1A5987",
+    color: "#5561D7",
     fontSize: 48,
     fontWeight: "bold",
-    marginBottom: 20,
+    alignSelf: 'center',
   },
+
   inputContainer: {
     width: "100%",
     gap: 20,
   },
+
   image: {
     justifyContent: "center",
     alignItems: "center",
     width: 550,
   },
+
   errorText: {
     color: "#e74c3c",
     fontSize: 14,
     fontWeight: "bold",
     textAlign: "center",
     marginBottom: -10,
-  },
-  linkText: {
-    marginTop: 10,
   },
 });

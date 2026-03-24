@@ -6,7 +6,7 @@ export const styles = StyleSheet.create({
     backgroundColor: "#D9D9D9",
     borderRadius: 8,
     padding: 18,
-    color: "#1A5987",
+    color: "#5561D7",
   },
 
   input_dark: {
@@ -19,7 +19,16 @@ export const styles = StyleSheet.create({
     color: 'white',
   },
 
-   input_container_dark: {
+  input_bg_transparent: {
+    backgroundColor: 'transparent',
+    borderWidth: 1,
+    borderRadius: 8,
+    padding: 12,
+    borderColor: '#B8B8B8',
+    color: '#858585',
+  },
+
+  input_container_dark: {
     width: "100%",
     backgroundColor: 'transparent',
     borderWidth: 1.5,
