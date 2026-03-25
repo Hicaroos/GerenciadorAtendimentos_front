@@ -1,7 +1,8 @@
-import { TouchableOpacity, TouchableOpacityProps, Text } from "react-native";
-import { baseStyles, getButtonStyle } from './style';
+import { TouchableOpacity, Text, Pressable } from "react-native";
+import { baseStyles, getButtonStyle, getButtonStyleWhileHover } from './style';
 import { WithIconButtonProps } from ".";
 import Loading from "../ui/Loading";
+import { useState } from "react";
 
 export function WithIcon({ 
   title, 
@@ -16,51 +17,63 @@ export function WithIcon({
   textSize = 'MD',
   processing,
   processingLabel,
-  darkTheme = false,
   ...rest 
 }: WithIconButtonProps) {
 
-  const buttonStyle = getButtonStyle(filled ?? false, darkTheme);
+  const [isHovered, setIsHovered] = useState<boolean>(false);
+  const [isPressed, setIsPressed] = useState<boolean>(false);
+
+  const buttonStyle = getButtonStyle(filled ?? false);
+  const buttonStyleWhileHover = getButtonStyleWhileHover(filled ?? false);
+
   const fontSize = textSize === 'MD' ? 16 : textSize === 'LG' ? 24 : 12;
+  const appliedButtonStyle = isPressed
+    ? buttonStyle
+      : isHovered
+    ? buttonStyleWhileHover
+      : buttonStyle
+  ;
+  const textColor = isPressed 
+    ? buttonStyle.color 
+      : isHovered 
+    ? buttonStyleWhileHover.color 
+      : buttonStyle.color
+  ;
 
   return (
-    <TouchableOpacity 
-    activeOpacity={0.8} 
-    style={[
-      baseStyles.button,
-      { 
-        padding, 
-        gap: gapAdjust,
-        borderRadius,
-        paddingHorizontal : 20,
-        backgroundColor   : buttonStyle.backgroundColor,
-        borderWidth       : buttonStyle.borderWidth,
-        borderColor       : buttonStyle.borderColor,
-        width             : fullWidth ? '100%' : 'auto',
-      }
-    ]} 
-    {...rest}
+    <Pressable
+      {...rest}
+      onHoverIn={() => setIsHovered(true)}
+      onHoverOut={() => setIsHovered(false)}
+      style={[
+        baseStyles.button,
+        appliedButtonStyle,
+        {
+          padding,
+          gap: gapAdjust,
+          borderRadius,
+          paddingHorizontal: 20,
+          width: fullWidth ? '100%' : 'auto',
+        },
+      ]}
     >
       {iconSide === 'LEFT' ? (
         <>
           {!processing ? (
             <Icon 
               size={fontSize} 
-              color={buttonStyle.textColor} 
+              color={textColor} 
               name={iconName}
             />
           ) : (
-            <Loading
-              size="small"
-              color={buttonStyle.textColor}
-            />
+            <Loading size="small" color={textColor} />
           )}
 
           <Text style={[
             baseStyles.title,
             { 
-              color: buttonStyle.textColor,
-              fontSize,
+              color    : textColor, 
+              fontSize, 
             }
           ]}>
             {processing ? processingLabel : title}
@@ -71,21 +84,25 @@ export function WithIcon({
           <Text style={[
             baseStyles.title,
             { 
-              color: buttonStyle.textColor,
-              fontSize,
+              color    : textColor, 
+              fontSize, 
             }
           ]}>
-            {title}
+            {processing ? processingLabel : title}
           </Text>
 
-          <Icon 
-            size={fontSize} 
-            color={buttonStyle.textColor} 
-            name={iconName}
-          />
+          {!processing ? (
+            <Icon 
+              size={fontSize} 
+              color={textColor} 
+              name={iconName}
+            />
+          ) : (
+            <Loading size="small" color={textColor} />
+          )}
         </>
       )}
-    </TouchableOpacity>
+    </Pressable>
   );
 }
 

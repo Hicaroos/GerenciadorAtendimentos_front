@@ -1,26 +1,47 @@
 import React from 'react'
-import { Pressable, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import Octicons from '@expo/vector-icons/Octicons';
+import { AppointmentStatus } from '.';
 
-const NextAppointment = () => {
+type Props = {
+  disciplineName       : string;
+  disciplineProfessor  : string;
+  appointmentStartHour : string;
+  appointmentEndHour   : string;
+  appointmentStatus    : AppointmentStatus;
+};
+
+const FromStudent = ({
+  disciplineName,
+  disciplineProfessor,
+  appointmentStartHour,
+  appointmentEndHour,
+  appointmentStatus,
+}:Props) => {
+
+  const APPOINTMENT_STATUS_MAP: Record<AppointmentStatus, string> = {
+    PENDING   : 'Pendente',
+    CONFIRMED : 'Confirmado',
+  };
+
   return (
     <View style={style.outter_container}>
       <View style={style.inner_left_container}>
         <View style={style.left_container_from_inner_left_container}>
           <View style={style.discipline_icon_container}>
             <Text style={style.discipline_icon}>
-              C
+              { disciplineName.slice(0, 1).toUpperCase() }
             </Text>
           </View>
 
           <View style={style.discipline_name_and_its_professor_name_container}>
             <Text style={style.discipline_name}>
-              Cálculo III
+              { disciplineName }
             </Text>
 
             <Text style={style.discipline_professor_name}>
-              Prof. Ana Martins
+              Prof. { disciplineProfessor }
             </Text>
           </View>
         </View>
@@ -34,20 +55,26 @@ const NextAppointment = () => {
             />
 
             <Text style={style.appointment_hour}>
-              14:30 - 15:00
+              { appointmentStartHour } - { appointmentEndHour }
             </Text>
           </View>
         </View>
       </View>
 
       <View style={style.inner_right_container}>
-        <View style={style.appointment_status_tag}>
-          <Text style={style.appointment_status_tag_text}>
-            Confirmado
+        <View style={[style.appointment_status_tag, appointmentStatus === 'CONFIRMED'
+          ? style.confirmed_tag
+          : style.peding_tag
+        ]}>
+          <Text style={[style.appointment_status_tag_text, appointmentStatus === 'CONFIRMED'
+            ? style.confirmed_tag_text
+            : style.peding_tag_text
+          ]}>
+            { APPOINTMENT_STATUS_MAP[appointmentStatus] }
           </Text>
         </View>
 
-        <TouchableOpacity style={style.edit_button}>
+        <TouchableOpacity>
           <Octicons 
             name="pencil" 
             size={18} 
@@ -65,7 +92,7 @@ const style = StyleSheet.create({
   },
 
   inner_left_container: {
-    flex: 1,
+    flex: 2,
     flexDirection: 'row',
   },
   
@@ -130,22 +157,34 @@ const style = StyleSheet.create({
     fontWeight: 500,
   },
 
-  appointment_status_tag: {
-    backgroundColor: '#CEEFD0',
+  appointment_status_tag: { 
     paddingHorizontal: 30,
     borderRadius: 16,
     paddingVertical: 4,
   },
 
   appointment_status_tag_text: {
-    color: 'green',
     paddingBottom: 2,
   },
 
-  edit_button: {
-
+  confirmed_tag: {
+    backgroundColor: '#CEEFD0',
+  },
+  
+  confirmed_tag_text: {
+    color: 'green',
+  },
+  
+  peding_tag: {
+    backgroundColor: '#EFCECE',
+  },
+  
+  peding_tag_text: {
+    color: '#AB5E5E',
   },
 });
 
-export default NextAppointment
+export default FromStudent;
+
+
 

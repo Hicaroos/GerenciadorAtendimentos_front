@@ -1,4 +1,4 @@
-import { TextInput, View, Text, StyleSheet } from "react-native";
+import { TextInput, View, StyleSheet } from "react-native";
 import Feather from '@expo/vector-icons/Feather';
 import AntDesign from '@expo/vector-icons/AntDesign';
 
@@ -11,7 +11,7 @@ export function Search({
     <View style={styles.input_container}>
       <Feather 
         name="search" 
-        size={18} 
+        size={16} 
         color="gray" 
       />
 
@@ -23,7 +23,7 @@ export function Search({
 
       <AntDesign 
         name="close" 
-        size={16} 
+        size={14} 
         color="gray" 
       />
     </View>
@@ -35,8 +35,8 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    borderRadius: 6,
-    borderColor: 'gray',
+    borderRadius: 10,
+    borderColor: '#a6a6a6',
     paddingHorizontal: 8,
     gap: 8,
     backgroundColor: '#fff'
@@ -45,6 +45,7 @@ const styles = StyleSheet.create({
   input: {
     padding: 5,
     flex: 1,
+    width: 180,
   }
 });
 

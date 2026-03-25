@@ -80,6 +80,8 @@ export const style = StyleSheet.create({
     borderRadius: 8,
     borderWidth: 1,
     borderColor: '#b9b9b9',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 
   next_appointments_title_and_new_appointment_button_container: {
@@ -94,11 +96,9 @@ export const style = StyleSheet.create({
     fontSize: 18,
   },
 
-  next_appointments_list_container: {
-
-  },
-
   next_appointments_list: {
     gap: 8,
+    height: 245,
+    paddingRight: 5,
   },
 });

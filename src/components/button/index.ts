@@ -9,7 +9,6 @@ type BaseProps = TouchableOpacityProps & {
   filled?          : boolean ; 
   fullWidth?       : boolean ;
   gapAdjust?       : number  ;
-  darkTheme?       : boolean ;
   processing?      : boolean ;
   processingLabel? : string  ;
   textSize?        : 'SM' | 'MD' | 'LG';

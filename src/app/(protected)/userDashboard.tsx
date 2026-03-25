@@ -1,18 +1,19 @@
-import { useState } from "react"; 
 import { useAuth } from "@/hooks/useAuth";
-import { Text, View } from "react-native";
 import { AppointmentsList } from "@/types/appointmentsList";
 import { yearMonthDayOnly } from "@/utils/yearMonthDayOnly";
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import AntDesign from '@expo/vector-icons/AntDesign';
-import { Image } from "react-native";
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import { useState } from "react";
+import { FlatList, Image, ScrollView, Text, View } from "react-native";
 
-import { style } from "./style/userDashboard";
-import { Redirect } from "expo-router";
 import { Button } from "@/components/button";
-import { Input } from "@/components/input";
 import { Card } from "@/components/card";
+import { AppointmentStatus } from "@/components/card/nextAppointment";
+import { Input } from "@/components/input";
+import { Redirect } from "expo-router";
+import { Calendar } from "react-native-calendars";
+import { style } from "./style/userDashboard";
 
 // SIMULAÇÃO DE REQUISIÇÃO JSON DO BACK VIA GET ****(APAGAR DEPOIS)****
 const MORINIG_APPOINTMENTS_LIST : AppointmentsList[] = [
@@ -38,6 +39,8 @@ export default function Index() {
   if (role !== "ROLE_STUDENT") {
     return <Redirect href="/(protected)/adminDashboard" />;
   }
+
+  const today = new Date().toISOString().split('T')[0];
 
   const [modalVisible, setModalVisible] = useState<
   | 'NEW_APPOINTMENT' 
@@ -123,8 +126,17 @@ export default function Index() {
     { title: 'Pendentes'         , value: '4'     , icon: <MaterialIcons name="info-outline" size={30} color="#BA1C1C" />},
   ];
 
+  const APPOINTMENTS_DATA = [
+    { disciplineName: 'Cálculo I'   , disciplineProfessor: 'Aline Martins'     , appointmentStartHour: '13:50', appointmentEndHour: '14:00', appointmentStatus: 'CONFIRMED' },
+    { disciplineName: 'Cálculo II'  , disciplineProfessor: 'Reginaldo Pereira' , appointmentStartHour: '14:50', appointmentEndHour: '15:00', appointmentStatus: 'PENDING' },
+    { disciplineName: 'Química I'   , disciplineProfessor: 'Dênis de Castro'   , appointmentStartHour: '15:50', appointmentEndHour: '16:00', appointmentStatus: 'CONFIRMED' },
+    { disciplineName: 'Cálculo I'   , disciplineProfessor: 'Aline Martins'     , appointmentStartHour: '13:50', appointmentEndHour: '14:00', appointmentStatus: 'CONFIRMED' },
+    { disciplineName: 'Cálculo II'  , disciplineProfessor: 'Reginaldo Pereira' , appointmentStartHour: '14:50', appointmentEndHour: '15:00', appointmentStatus: 'PENDING' },
+    { disciplineName: 'Química I'   , disciplineProfessor: 'Dênis de Castro'   , appointmentStartHour: '15:50', appointmentEndHour: '16:00', appointmentStatus: 'CONFIRMED' },
+  ];
+
   return (
-    <View style={style.wrapper_container}>
+    <ScrollView style={style.wrapper_container}>
 
       <View style={style.header}>
         <View style={style.header_container}>
@@ -138,6 +150,7 @@ export default function Index() {
             title={"Logout"}
             padding={5}       
             textSize="MD"   
+            onPress={logout}
           />
         </View>
       </View>
@@ -188,22 +201,66 @@ export default function Index() {
               />  
             </View>
 
-            <View style={style.next_appointments_list_container}>
-              <View style={style.next_appointments_list}>
-                {[1,2,3].map((index) => (
-                  <Card.NextAppointment key={index}/>
-                ))}
-              </View>
-            </View>
+            <FlatList
+              data={APPOINTMENTS_DATA}
+              keyExtractor={(_, index) => String(index)}
+              contentContainerStyle={style.next_appointments_list}
+              renderItem={({ item }) => (
+                <Card.NextAppointment.FromStudent 
+                  appointmentEndHour={item.appointmentEndHour}
+                  appointmentStartHour={item.appointmentStartHour}
+                  appointmentStatus={item.appointmentStatus as AppointmentStatus}
+                  disciplineName={item.disciplineName}
+                  disciplineProfessor={item.disciplineProfessor}
+                />
+              )}
+            />
           </View>
 
           <View style={style.calendar_container}>
-
+            <Calendar
+              current={today}
+              onDayPress={(day: any) => {}}
+              markingType="custom"
+              markedDates={{
+                [today]: { 
+                  selected: true, 
+                  selectedColor: '#5561D7',
+                },
+                [today]: {
+                  customStyles: {
+                    container: {
+                      backgroundColor: '#5562d73b', 
+                      borderRadius: '50%',
+                    },
+                    text: {
+                      color: '#5561D7',
+                      fontWeight: 'bold',
+                    },
+                  },
+                },
+              }}
+              theme={{
+                backgroundColor: '#5561D7',
+                calendarBackground: '#fff',
+                textSectionTitleColor: '#5561D7',
+                selectedDayBackgroundColor: '#5561D7',
+                selectedDayTextColor: '#ffffff',
+                todayTextColor: '#5561D7',
+                dayTextColor: '#959595',
+                textDisabledColor: '#4444443e',
+                monthTextColor: '#5561D7',
+                arrowColor: '#5561D7',
+                textDayHeaderFontWeight: '500',
+                textMonthFontWeight: '700',
+                textDayFontWeight: '500',
+              }}
+            />
           </View>
         </View>
       </View>
 
-    </View>
+    </ScrollView>
   );
 }
 

@@ -50,10 +50,11 @@ const style = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 20,
+    paddingVertical: 10,
   },
 
   card_statics_number: {
-    fontSize: 32,
+    fontSize: 28,
     color: '#5561D7',
     fontWeight: '500',
   },
