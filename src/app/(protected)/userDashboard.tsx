@@ -1,21 +1,18 @@
 import { useState } from "react"; 
 import { useAuth } from "@/hooks/useAuth";
-import { Input } from "@/components/input";
-import { Modal } from "@/components/modal";
-import { Button } from "@/components/button";
-import { Toast } from "@/components/ui/Toast";
-import { ScrollView, Text, View } from "react-native";
-import { Table } from "@/components/table/appointments";
+import { Text, View } from "react-native";
 import { AppointmentsList } from "@/types/appointmentsList";
 import { yearMonthDayOnly } from "@/utils/yearMonthDayOnly";
-
-import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import AntDesign from '@expo/vector-icons/AntDesign';
-import Feather from '@expo/vector-icons/Feather';
-import Entypo from '@expo/vector-icons/Entypo';
+import { Image } from "react-native";
 
 import { style } from "./style/userDashboard";
 import { Redirect } from "expo-router";
+import { Button } from "@/components/button";
+import { Input } from "@/components/input";
+import { Card } from "@/components/card";
 
 // SIMULAÇÃO DE REQUISIÇÃO JSON DO BACK VIA GET ****(APAGAR DEPOIS)****
 const MORINIG_APPOINTMENTS_LIST : AppointmentsList[] = [
@@ -119,214 +116,93 @@ export default function Index() {
     .filter((appointment) => yearMonthDayOnly(appointment.date) === todayDate)
     .sort((a, b) => a.hour.localeCompare(b.hour));
 
+  const DASHBOARD_CARDS_DATA = [
+    { title: 'Agendamentos Hoje' , value: '4'     , icon: <MaterialIcons name="calendar-month" size={30} color="turquoise" />},
+    { title: 'Próximo Horário'   , value: '16:30' , icon: <MaterialCommunityIcons name="clock-time-nine-outline" size={30} color="orange" />},
+    { title: 'Confirmados'       , value: '4'     , icon: <MaterialIcons name="check-circle-outline" size={30} color="#4BC233" />},
+    { title: 'Pendentes'         , value: '4'     , icon: <MaterialIcons name="info-outline" size={30} color="#BA1C1C" />},
+  ];
+
   return (
     <View style={style.wrapper_container}>
 
-      <Modal.AppointmentForm
-        modalVisible={modalVisible === 'NEW_APPOINTMENT'}
-        onClose={() => { setModalVisible(null)}}
-        onSuccess={{
-          updateList : (data) => addNewAppointment(data),
-          toast      : () => setToastVisible({message: 'Agendamento realizado com sucesso!', type: 'success'}),
-        }}
-        onFailure={() => setToastVisible({message: 'Houve um erro ao realizar o agendamento. Tente novamente mais tarde!', type: 'error'})}
-        appointments={[
-          ...morningAppointmentsListFilteredByDate, 
-          ...afternoonAppointmentsListFilteredByDate,
-        ]}
-      />
+      <View style={style.header}>
+        <View style={style.header_container}>
+          <Image
+            source={require('@/assets/images/academicLogo.svg')}
+            style={{ width: 70, height: 70, marginTop: 10, marginLeft: -10 }}
+          />
 
-      <Modal.AppointmentForm
-        modalVisible={modalVisible === 'EDIT_APPOINTMENT' && !!appointmentToBeEdit}
-        onClose={() => { setModalVisible(null)}}
-        onSuccess={{
-          updateList : (data) => editAppointment(data),
-          toast      : () => setToastVisible({message: 'Agendamento editado com sucesso!', type: 'success'}),
-        }}
-        onFailure={() => setToastVisible({message: 'Houve um erro ao editar o agendamento. Tente novamente mais tarde!', type: 'error'})}
-        appointments={[
-          ...morningAppointmentsListFilteredByDate, 
-          ...afternoonAppointmentsListFilteredByDate,
-        ]}
-        editAppointmentData={appointmentToBeEdit!}
-      />
+          <Button 
+            filled
+            title={"Logout"}
+            padding={5}       
+            textSize="MD"   
+          />
+        </View>
+      </View>
 
-      <Modal.ConfirmAction
-        loading={processing}
-        message="Tem certeza em desagendar esse atendimento?"
-        title="Confirmar desegendamento"
-        modalVisible={modalVisible === 'REMOVE_APPOINTMENT_CONFIRM'}
-        onClose={() => setModalVisible(null)}
-        onConfirm={() => handleRemoveAppointment(appointmentIdToBeRemoved!)}
-      />
-
-      <Toast 
-        message={toastVisible?.message!} 
-        type={toastVisible?.type!}
-        visible={!!toastVisible} 
-        onClose={() => setToastVisible(null)} 
-      />
-
-      <View>
-        <View style={style.main_container}>
-          <View style={style.header_container}>
-            <Text style={style.header_title}>
-              Sua Agenda 
+      <View style={style.main_container}>
+        <View style={style.welcome_message_and_search_bar_container}>
+          <View style={style.welcome_message_container}>
+            <Text style={style.welcome_text}>
+              Seja bem vindo(a), {username}!
             </Text>
 
-            <View style={style.appointments_day_and_new_appointment_container}>
+            <Text style={style.brief_text}>
+              Aqui está o resumo dos seus agendamentos
+            </Text>
+          </View>
+
+          <View>
+            <Input.Search/>         
+          </View>
+        </View>
+
+        <View style={style.dashboard_stats_cards_container}>
+          {DASHBOARD_CARDS_DATA.map((item) => (
+            <Card.DashboardStatistics
+              key={item.title}
+              title={item.title}
+              value={item.value}
+              icon={() => item.icon}
+            />
+          ))}
+        </View>
+
+        <View style={style.next_appointments_and_calendar_container}>
+          <View style={style.next_appointments_container}>
+            <View style={style.next_appointments_title_and_new_appointment_button_container}>
+              <Text style={style.next_appointments_title}>
+                Próximos Agendamentos
+              </Text>
+
               <Button.WithIcon
-                darkTheme
-                padding={8}
-                gapAdjust={30}
-                iconSide="RIGHT"
-                textSize="MD"
-                title="Novo"
+                title="Novo Agendamento"
                 iconFamily={AntDesign}
-                iconName="plus"
-                onPress={() => setModalVisible('NEW_APPOINTMENT')}
-              />
+                iconName={'plus-circle'}
+                iconSide={'RIGHT'}
+                padding={8}
+                textSize="SM"
+                borderRadius={32}
+              />  
+            </View>
 
-              <Input.CalendarDate 
-                darkTheme
-                onChange={(date) => {
-                  console.log(date);
-                  setTodayDate(yearMonthDayOnly(date));
-                }}
-              />
-
-              <Button.WithIcon
-                iconFamily={Entypo}
-                iconName="log-out"
-                title="Sair"
-                darkTheme
-                padding={1}
-                onPress={logout}
-              />
+            <View style={style.next_appointments_list_container}>
+              <View style={style.next_appointments_list}>
+                {[1,2,3].map((index) => (
+                  <Card.NextAppointment key={index}/>
+                ))}
+              </View>
             </View>
           </View>
 
-          <View style={style.appointments_main_container}>
-            <View style={style.appointments_container}>
-              <View style={style.appointments_container_header}>
-                <View style={style.appointments_period_label_container}>
-                  <Feather 
-                    name="sunrise" 
-                    size={18} 
-                    color="#1A5987" 
-                  />
-                  <Text style={style.text_color}>
-                    Manhã
-                  </Text>
-                </View>
+          <View style={style.calendar_container}>
 
-                <View>
-                  <Text style={style.text_color}>
-                    09h - 12h
-                  </Text>
-                </View>
-              </View>
-
-              <View style={style.appointments_list_table_container}>
-                {morningAppointmentsListFilteredByDate.length > 0 ? (
-                  <>
-                    <Table.Appointments.Header />
-                    
-                    <ScrollView 
-                    style={style.scroll_content_container} 
-                    contentContainerStyle={style.scroll_content_items}
-                    showsVerticalScrollIndicator={false}
-                    >
-                      {morningAppointmentsListFilteredByDate.map((item, index) => (                                            
-                        <Table.Appointments.Data
-                          key={item.id}
-                          hour={item.hour}
-                          userName={item.userName}
-                          number={item.number}
-                          lastItem={index !== morningAppointmentsListFilteredByDate.length - 1}
-                          onEdit={() => {
-                            console.log(`Editando agendamento ${item.id}`);
-                            setAppointmentToBeEdited(item);
-                            setModalVisible('EDIT_APPOINTMENT');
-                          }}
-                          onRemove={() => {
-                            console.log(`Removendo agendamento ${item.id}`);
-                            setAppointmentIdToBeRemoved(item.id);
-                            setModalVisible('REMOVE_APPOINTMENT_CONFIRM')
-                          }}
-                        />                       
-                      ))}
-                    </ScrollView>
-                  </>
-                ) : (
-                  <Text style={style.no_list_text_color}>
-                    Nada marcado para você nesse horário...
-                  </Text>
-                )}
-              </View>
-            </View>
-
-            <View style={style.appointments_container}>
-              <View style={style.appointments_container_header}>
-                <View style={style.appointments_period_label_container}>
-                  <FontAwesome5 
-                    name="cloud-sun"
-                    size={18} 
-                    color="#1A5987" 
-                  />
-                  <Text style={style.text_color}>
-                    Tarde
-                  </Text>
-                </View>
-
-                <View>
-                  <Text style={style.text_color}>
-                    13h - 18h
-                  </Text>
-                </View>
-              </View>
-
-              <View style={style.appointments_list_table_container}>
-                {afternoonAppointmentsListFilteredByDate.length > 0 ? (
-                  <>
-                    <Table.Appointments.Header />
-
-                    <ScrollView 
-                    style={style.scroll_content_container} 
-                    contentContainerStyle={style.scroll_content_items}
-                    showsVerticalScrollIndicator={false}
-                    >
-                      {afternoonAppointmentsListFilteredByDate.map((item, index) => (
-                        <Table.Appointments.Data
-                          key={item.id}
-                          hour={item.hour}
-                          userName={item.userName}
-                          number={item.number}
-                          lastItem={index !== afternoonAppointmentsListFilteredByDate.length - 1}
-                          onEdit={() => {
-                            console.log(`Editando agendamento ${item.id}`);
-                            setAppointmentToBeEdited(item);
-                            setModalVisible('EDIT_APPOINTMENT');
-                          }}
-                          onRemove={() => {
-                            console.log(`Removendo agendamento ${item.id}`);
-                            setAppointmentIdToBeRemoved(item.id);
-                            setModalVisible('REMOVE_APPOINTMENT_CONFIRM');
-                          }}
-                        />                     
-                      ))}
-                    </ScrollView>
-                  </>              
-                ) : (
-                  <Text style={style.no_list_text_color}>
-                    Nada marcado para você nesse horário...
-                  </Text>
-                )}
-              </View>
-            </View>
           </View>
         </View>
       </View>
+
     </View>
   );
 }

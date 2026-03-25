@@ -3,85 +3,102 @@ import { StyleSheet } from "react-native";
 export const style = StyleSheet.create({
   wrapper_container: {
     flex: 1,
-    backgroundColor: 'black',
+    backgroundColor: '#E6E6E6',
   },
 
-  scroll_content_container: {
-    maxHeight: 100,
+  header: {
+    borderBottomWidth: 1,
+    borderBottomColor: '#b9b9b9',
   },
 
-  scroll_content_items: {
-    gap: 8,
+  header_container: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 40,
+    height: 67,
+    maxWidth: 1080,
+    alignSelf: 'center',
+    width: '100%',
+    backgroundColor: 'transparent',
   },
 
   main_container: {
-    padding: 20,
-    width: '100%',
-    gap: 24,
-    alignSelf: 'center',
-    backgroundColor: 'black',
+    flex: 1,
     maxWidth: 1080,
-  },
-
-  header_title: {
-    color: 'white',
-    fontWeight: '700',
-    fontSize: 24,
-  },
-  
-  header_container: {
-    flexDirection  : 'row',
-    alignItems: 'center',
-    justifyContent : 'space-between',
-  },
-  
-  appointments_day_and_new_appointment_container: {
-    flexDirection: 'row',
-    gap: 8,
-  },
-
-  appointments_main_container: {
+    alignSelf: 'center',
+    paddingHorizontal: 40,
+    width: '100%',
+    paddingVertical: 16,
     gap: 16,
   },
 
-  appointments_container: {
-    borderWidth: 1.5,
-    borderColor: '#3E3C41',
-    borderRadius: 8,
-  },
-
-  appointments_period_label_container: {
+  welcome_message_and_search_bar_container: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+
+  welcome_message_container: {
+    gap: 3,
+  },
+
+  welcome_text: {
+    fontSize: 18,
+    color: '#5561D7',
+    fontWeight: 500,
+  },
+
+  brief_text: {
+    color: 'gray',
+  },
+
+  dashboard_stats_cards_container: {
+    flexDirection: 'row',
+    gap: 8
+  },
+
+  next_appointments_and_calendar_container: {
+    flexDirection: 'row',
     gap: 8,
   },
 
-  appointments_container_header: {
+  next_appointments_container: {
+    flex: 3,
+    gap: 16,
+    backgroundColor: '#fff',
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#b9b9b9',
+    paddingVertical: 16,
+    paddingHorizontal: 24,
+  },
+
+  calendar_container: {
+    flex: 1.035,
+    backgroundColor: '#fff',
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#b9b9b9',
+  },
+
+  next_appointments_title_and_new_appointment_button_container: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
-    borderBottomWidth: 1.5,
-    borderBottomColor: '#3E3C41',
-    paddingVertical: 6,
-    paddingHorizontal: 16,
+    justifyContent: 'space-between',
   },
 
-  text_color: {
-    color: '#9c97a4'
+  next_appointments_title: {
+    color: '#5561D7',
+    fontWeight: 'bold',
+    fontSize: 18,
   },
 
-  no_list_text_color: {
-    color: '#635f68',
+  next_appointments_list_container: {
+
   },
 
-  appointments_list_table_container: {
-    paddingVertical: 10,
-    paddingBottom: 12,
-    paddingHorizontal: 16,
-    gap: 10,
-  },
-
-  appointments_list_table_row: {
-    flexDirection: 'row',
+  next_appointments_list: {
+    gap: 8,
   },
 });

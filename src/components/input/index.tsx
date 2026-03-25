@@ -1,6 +1,7 @@
 import { TextInputProps } from "react-native";
 import { CalendarDate } from "./CalendarDate";
-import { Default } from "./Default"
+import { Default } from "./Default";
+import { Search } from "./Search";
 import { WithIcon } from "./WithIcon";
 
 type BaseProps = {
@@ -22,7 +23,6 @@ export type DefaultInputProps = BaseProps & TextInputProps & {
 
 export const Input = Object.assign(Default, {
   CalendarDate,
-  Default: {
-    WithIcon,
-  }
+  Search,
+  Default: { WithIcon }
 });
