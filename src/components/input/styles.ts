@@ -31,8 +31,8 @@ export const styles = StyleSheet.create({
   input_container_dark: {
     width: "100%",
     backgroundColor: 'transparent',
-    borderWidth: 1.5,
-    borderColor: '#3E3C41',
+    borderWidth: 1,
+    borderColor: '#5561D7',
     borderRadius: 8,
     flexDirection: 'row',
     color: 'white',

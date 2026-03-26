@@ -14,6 +14,7 @@ export function Default({
   textSize = 'MD',
   processing,
   processingLabel,
+  hoverAnimation = true,
   unable,
   ...rest 
 }: DefaultButtonProps) {
@@ -25,17 +26,24 @@ export function Default({
   const [isHovered, setIsHovered] = useState<boolean>(false);
   const [isPressed, setIsPressed] = useState<boolean>(false);
 
-  const appliedButtonStyle = isPressed
-    ? buttonStyle
-      : isHovered
-    ? buttonStyleWhileHover
-      : buttonStyle
+  const appliedButtonStyle =
+    hoverAnimation ?
+      isPressed
+        ? buttonStyle
+          : isHovered
+        ? buttonStyleWhileHover
+          : buttonStyle
+    :  buttonStyle;
   ;
-  const textColor = isPressed 
-    ? buttonStyle.color 
-      : isHovered 
-    ? buttonStyleWhileHover.color 
-      : buttonStyle.color
+
+  const textColor = 
+    hoverAnimation ?
+      isPressed 
+        ? buttonStyle.color 
+          : isHovered 
+        ? buttonStyleWhileHover.color 
+          : buttonStyle.color
+    : buttonStyle.color
   ;
 
   return (

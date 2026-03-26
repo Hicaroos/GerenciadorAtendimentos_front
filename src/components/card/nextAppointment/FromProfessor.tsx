@@ -118,7 +118,7 @@ const style = StyleSheet.create({
 
   discipline_name: {
     fontWeight: 500,
-    fontSize: 18,
+    fontSize: 16,
   },
 
   discipline_professor_name: {
@@ -128,7 +128,7 @@ const style = StyleSheet.create({
   appointment_hour_container: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 1,
+    gap: 4,
     marginBottom: 2,
   },
 

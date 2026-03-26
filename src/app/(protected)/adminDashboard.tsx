@@ -1,10 +1,7 @@
 import { Button } from "@/components/button";
 import { Card } from "@/components/card";
-import { AppointmentStatus } from "@/components/card/nextAppointment";
 import { Input } from "@/components/input";
 import { useAuth } from "@/hooks/useAuth";
-import { AppointmentsList } from "@/types/appointmentsList";
-import { yearMonthDayOnly } from "@/utils/yearMonthDayOnly";
 import { MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
 import { Redirect } from "expo-router";
 import React, { useState } from "react";
@@ -13,21 +10,36 @@ import { Calendar } from "react-native-calendars";
 import { style } from './style/adminDashboard';
 import { style as userDashBoardStyle } from "./style/userDashboard";
 
-// SIMULAÇÃO DE REQUISIÇÃO JSON DO BACK VIA GET ****(APAGAR DEPOIS)****
-const MORINIG_APPOINTMENTS_LIST : AppointmentsList[] = [
-  {date: '2026-03-20T15:00:00.000Z', id: 1, hour: '09:00', number: null, userName: 'Leony Leandro Barros'},
-  {date: '2026-03-19T15:00:00.000Z', id: 2, hour: '10:00', number: null, userName: 'Marcus Invanir Nunes Culau'},
-  {date: '2026-03-19T15:00:00.000Z', id: 3, hour: '11:00', number: null, userName: 'Eberth Matheus Pimenta'},
+const DASHBOARD_CARDS_DATA = [
+  { title: 'Agendamentos Hoje' , value: '4'     , icon: <MaterialIcons name="calendar-month" size={30} color="turquoise" />},
+  { title: 'Próximo Horário'   , value: '16:30' , icon: <MaterialCommunityIcons name="clock-time-nine-outline" size={30} color="orange" />},
+  { title: 'Confirmados'       , value: '4'     , icon: <MaterialIcons name="check-circle-outline" size={30} color="#4BC233" />},
+  { title: 'Pendentes'         , value: '4'     , icon: <MaterialIcons name="info-outline" size={30} color="#BA1C1C" />},
 ];
 
-// SIMULAÇÃO DE REQUISIÇÃO JSON DO BACK VIA GET ****(APAGAR DEPOIS)****
-const AFTERNOON_APPOINTMENTS_LIST : AppointmentsList[] = [
-  {date: '2026-03-19T15:00:00.000Z', id: 4, hour: '13:00', number: null, userName: 'Leony Leandro Barros'},
-  {date: '2026-03-19T15:00:00.000Z', id: 5, hour: '14:00', number: null, userName: 'Marcus Invanir Nunes Culau'},
-  {date: '2026-03-19T15:00:00.000Z', id: 6, hour: '15:00', number: null, userName: 'Matheus Eberth Pimenta'},
-  {date: '2026-03-19T15:00:00.000Z', id: 7, hour: '16:00', number: null, userName: 'Leony Leandro Barros'},
-  {date: '2026-03-20T15:00:00.000Z', id: 8, hour: '17:00', number: null, userName: 'Marcus Invanir Nunes Culau'},
-  {date: '2026-03-20T15:00:00.000Z', id: 9, hour: '18:00', number: null, userName: 'Matheus Eberth Pimenta'},
+const APPOINTMENTS_DATA = [
+  { disciplineName: 'Cálculo I'   , studentName: 'Aline Martins'     , appointmentStartHour: '13:50', appointmentEndHour: '14:00' },
+  { disciplineName: 'Cálculo II'  , studentName: 'Reginaldo Pereira' , appointmentStartHour: '14:50', appointmentEndHour: '15:00' },
+  { disciplineName: 'Química I'   , studentName: 'Dênis de Castro'   , appointmentStartHour: '15:50', appointmentEndHour: '16:00' },
+  { disciplineName: 'Cálculo I'   , studentName: 'Aline Martins'     , appointmentStartHour: '13:50', appointmentEndHour: '14:00' },
+  { disciplineName: 'Cálculo II'  , studentName: 'Reginaldo Pereira' , appointmentStartHour: '14:50', appointmentEndHour: '15:00' },
+  { disciplineName: 'Química I'   , studentName: 'Dênis de Castro'   , appointmentStartHour: '15:50', appointmentEndHour: '16:00' },
+];
+
+const PENDING_SOLICITATIONS_DATA = [
+  { disciplineName: 'Cálculo I'   , studentName: 'Aline Martins'     , appointmentStartHour: '13:50', appointmentEndHour: '14:00' },
+  { disciplineName: 'Cálculo II'  , studentName: 'Reginaldo Pereira' , appointmentStartHour: '14:50', appointmentEndHour: '15:00' },
+  { disciplineName: 'Química I'   , studentName: 'Dênis de Castro'   , appointmentStartHour: '15:50', appointmentEndHour: '16:00' },
+  { disciplineName: 'Cálculo I'   , studentName: 'Aline Martins'     , appointmentStartHour: '13:50', appointmentEndHour: '14:00' },
+  { disciplineName: 'Cálculo II'  , studentName: 'Reginaldo Pereira' , appointmentStartHour: '14:50', appointmentEndHour: '15:00' },
+  { disciplineName: 'Química I'   , studentName: 'Dênis de Castro'   , appointmentStartHour: '15:50', appointmentEndHour: '16:00' },
+];
+
+const PROFESSOR_DISCIPLINES = [
+  'Calculo I',
+  'Calculo II',
+  'Calculo III',
+  'Português',
 ];
 
 export default function Index() {
@@ -51,102 +63,6 @@ export default function Index() {
     type    : 'success' | 'error';
   } | null>(null);
 
-  const [todayDate, setTodayDate] = useState<string>(yearMonthDayOnly(new Date()));
-  const [processing, setProcessing] = useState<boolean>(false);
-
-  const [morningList, setMorningList] = useState<AppointmentsList[]>(MORINIG_APPOINTMENTS_LIST);
-  const [afternoonList, setAfternoonList] = useState<AppointmentsList[]>(AFTERNOON_APPOINTMENTS_LIST);
-
-  const [appointmentToBeEdit, setAppointmentToBeEdited] = useState<AppointmentsList | null>(null);
-  const [appointmentIdToBeRemoved, setAppointmentIdToBeRemoved] = useState<number | null>(null);
-
-  // Função que só atualiza ao vivo a tabela com novos agendamentos visualmente. 
-  // Os dados em sí devem ser inseridos no banco para persistirem.
-  const addNewAppointment = (newApp : AppointmentsList) => {
-    const hourInt = parseInt(newApp.hour.substring(0, 2));
-    
-    if (hourInt <= 12) {
-      setMorningList(prev => [...prev, newApp]);
-    } else {
-      setAfternoonList(prev => [...prev, newApp]);
-    }
-  };
-
-  const editAppointment = (updatedAppointmentData : AppointmentsList) => {
-    
-    const hourInt = parseInt(updatedAppointmentData.hour.substring(0, 2));
-    const isMorning = hourInt <= 12;
-
-    setMorningList(prev => prev.filter(item => item.id !== updatedAppointmentData.id));
-    setAfternoonList(prev => prev.filter(item => item.id !== updatedAppointmentData.id));
-    
-    if (isMorning) {
-      setMorningList(prev => [...prev, updatedAppointmentData]);
-    } else {
-      setAfternoonList(prev => [...prev, updatedAppointmentData]);
-    }
-
-    setAppointmentToBeEdited(null);
-  };
-
-  const handleRemoveAppointment = async(id : number) => {
-    if (processing) return;
-    setProcessing(true);
-
-    try {
-      // Lógica de remoção no back
-      setMorningList(prev => prev.filter(item => item.id !== id));
-      setAfternoonList(prev => prev.filter(item => item.id !== id));
-
-      setToastVisible({ message: 'Agendamento removido com sucesso!', type: 'success'});
-    } catch (error:any) {
-      console.error(error);
-      setToastVisible({message: `Houve um erro ao desagendar!: ${error}`, type: 'error'});
-    } finally {
-      setModalVisible(null);
-      setProcessing(false);
-    }
-  };
-
-  const morningAppointmentsListFilteredByDate : AppointmentsList[] = morningList
-    .filter((appointment) => yearMonthDayOnly(appointment.date) === todayDate)
-    .sort((a, b) => a.hour.localeCompare(b.hour)); 
-
-  const afternoonAppointmentsListFilteredByDate : AppointmentsList[] = afternoonList
-    .filter((appointment) => yearMonthDayOnly(appointment.date) === todayDate)
-    .sort((a, b) => a.hour.localeCompare(b.hour));
-
-  const DASHBOARD_CARDS_DATA = [
-    { title: 'Agendamentos Hoje' , value: '4'     , icon: <MaterialIcons name="calendar-month" size={30} color="turquoise" />},
-    { title: 'Próximo Horário'   , value: '16:30' , icon: <MaterialCommunityIcons name="clock-time-nine-outline" size={30} color="orange" />},
-    { title: 'Confirmados'       , value: '4'     , icon: <MaterialIcons name="check-circle-outline" size={30} color="#4BC233" />},
-    { title: 'Pendentes'         , value: '4'     , icon: <MaterialIcons name="info-outline" size={30} color="#BA1C1C" />},
-  ];
-
-  const APPOINTMENTS_DATA = [
-    { disciplineName: 'Cálculo I'   , studentName: 'Aline Martins'     , appointmentStartHour: '13:50', appointmentEndHour: '14:00' },
-    { disciplineName: 'Cálculo II'  , studentName: 'Reginaldo Pereira' , appointmentStartHour: '14:50', appointmentEndHour: '15:00' },
-    { disciplineName: 'Química I'   , studentName: 'Dênis de Castro'   , appointmentStartHour: '15:50', appointmentEndHour: '16:00' },
-    { disciplineName: 'Cálculo I'   , studentName: 'Aline Martins'     , appointmentStartHour: '13:50', appointmentEndHour: '14:00' },
-    { disciplineName: 'Cálculo II'  , studentName: 'Reginaldo Pereira' , appointmentStartHour: '14:50', appointmentEndHour: '15:00' },
-    { disciplineName: 'Química I'   , studentName: 'Dênis de Castro'   , appointmentStartHour: '15:50', appointmentEndHour: '16:00' },
-  ];
-
-  const PENDING_SOLICITATIONS_DATA = [
-    { disciplineName: 'Cálculo I'   , studentName: 'Aline Martins'     , appointmentStartHour: '13:50', appointmentEndHour: '14:00' },
-    { disciplineName: 'Cálculo II'  , studentName: 'Reginaldo Pereira' , appointmentStartHour: '14:50', appointmentEndHour: '15:00' },
-    { disciplineName: 'Química I'   , studentName: 'Dênis de Castro'   , appointmentStartHour: '15:50', appointmentEndHour: '16:00' },
-    { disciplineName: 'Cálculo I'   , studentName: 'Aline Martins'     , appointmentStartHour: '13:50', appointmentEndHour: '14:00' },
-    { disciplineName: 'Cálculo II'  , studentName: 'Reginaldo Pereira' , appointmentStartHour: '14:50', appointmentEndHour: '15:00' },
-    { disciplineName: 'Química I'   , studentName: 'Dênis de Castro'   , appointmentStartHour: '15:50', appointmentEndHour: '16:00' },
-  ];
-
-  const PROFESSOR_DISCIPLINES = [
-    'Calculo I',
-    'Calculo II',
-    'Calculo III',
-    'Português',
-  ];
 
   return (
     <ScrollView style={userDashBoardStyle.wrapper_container}>

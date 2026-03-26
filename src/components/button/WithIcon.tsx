@@ -43,6 +43,8 @@ export function WithIcon({
   return (
     <Pressable
       {...rest}
+      onPressIn={() => setIsPressed(true)}
+      onPressOut={() => setIsPressed(false)}
       onHoverIn={() => setIsHovered(true)}
       onHoverOut={() => setIsHovered(false)}
       style={[

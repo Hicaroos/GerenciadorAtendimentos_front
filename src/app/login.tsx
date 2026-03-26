@@ -102,7 +102,7 @@ export default function Index() {
           <View style={{ flexDirection: 'row', alignSelf: 'flex-end' }}>
             <Text style={{ color: '#919191' }}>Não possui uma conta? </Text>
             <Link href="/register" asChild>
-              <Text style={{ color: '#0f0f0f', fontWeight: 'bold' }}>
+              <Text style={{ color: '#5561D7', fontWeight: 'bold' }}>
                 Cadastre-se!
               </Text>
             </Link>

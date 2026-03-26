@@ -21,13 +21,12 @@ export function WithIcon({
 
   return (
     <View style={{gap: 6}}>
-      <Text style={{ color: '#c0c0c0', fontWeight: 'bold' }}>
+      <Text style={{ color: '#5561D7', fontWeight: 'bold' }}>
         {label}
       </Text>
 
       <View style={[
         styles.input_container_dark, 
-        isFocused && { borderColor: '#fff' },
         {
           alignItems: 'center',
           paddingHorizontal: 8,
@@ -36,7 +35,7 @@ export function WithIcon({
         <IconFamily 
           name={iconName} 
           size={22} 
-          color={isFocused ? "#fff" : "#1A5987"} 
+          color={"#5561D7"} 
         />
 
         <TextInput          
@@ -47,7 +46,7 @@ export function WithIcon({
           style={{ 
             flex: 1, 
             paddingVertical: 8,
-            color: '#b5b5b5',
+            color: '#5561D7',
             outlineStyle: 'none', 
           } as any}
         ></TextInput>

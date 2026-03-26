@@ -129,7 +129,7 @@ const style = StyleSheet.create({
   discipline_icon: {
     color:  '#5E6BEF',
     fontWeight: 'bold',
-    fontSize: 18
+    fontSize: 16
   },
 
   discipline_name_and_its_professor_name_container: {
@@ -148,7 +148,7 @@ const style = StyleSheet.create({
   appointment_hour_container: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 1,
+    gap: 4,
     marginBottom: 2,
   },
 

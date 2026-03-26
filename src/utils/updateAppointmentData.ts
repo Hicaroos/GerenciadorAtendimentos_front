@@ -1,9 +1,9 @@
-import { AppointmentsList } from "@/types/appointmentsList";
+import { Appointment } from "@/types/appointment/studentAppointmentRequest";
 
 export const updateListLogic = (
-  prevList               : AppointmentsList[], 
+  prevList               : Appointment[], 
   shouldBeInTheList      : boolean,
-  updatedAppointmentData : AppointmentsList,
+  updatedAppointmentData : Appointment,
 ) => {
   if (shouldBeInTheList) {
     const exists = prevList.find(item => item.id === updatedAppointmentData.id);

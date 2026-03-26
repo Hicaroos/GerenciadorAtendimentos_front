@@ -17,7 +17,6 @@ LocaleConfig.defaultLocale = 'pt-br';
 export const CalendarDate = ({ 
   padding = 8, 
   borderRadius = 8, 
-  darkTheme = false,
   hasLabel = false,
   label,
   inputValue,
@@ -40,7 +39,7 @@ export const CalendarDate = ({
     <View>
       <View style={{ gap: 5 }}>
         {hasLabel &&
-          <Text style={{ color: '#c0c0c0', fontWeight: 'bold' }}>
+          <Text style={{ color: '#5561D7', fontWeight: 'bold' }}>
             { label }
           </Text>
         }
@@ -49,9 +48,10 @@ export const CalendarDate = ({
         activeOpacity={0.8}
         style={[
           styles.input, 
-          { padding, 
+          { 
+            padding, 
             borderRadius, 
-            borderColor: darkTheme ? '#3E3C41' : '#1A5987'        
+            borderColor: '#5561D7'        
           }
         ]} 
         onPress={() => setShowModal(true)}
@@ -59,12 +59,11 @@ export const CalendarDate = ({
           <Entypo 
             name="calendar" 
             size={18} 
-            color="#1A5987" 
+            color="#5561D7" 
           />
 
           <Text style={[
             styles.text, 
-            darkTheme && { color: '#c0c0c0' }
           ]}>
             {inputValue ? yearMonthDayOnly(inputValue, true) : date.toLocaleDateString('pt-BR')}
           </Text>
@@ -72,7 +71,7 @@ export const CalendarDate = ({
           <Entypo 
             name="chevron-down" 
             size={18} 
-            color={darkTheme ? '#c0c0c0' : '#1A5987'} 
+            color={'#5561D7'} 
             style={{marginLeft: 'auto'}}
           />
         </TouchableOpacity>
@@ -92,25 +91,41 @@ export const CalendarDate = ({
             <Calendar
               current={selectedString}
               onDayPress={(day: any) => handleConfirm(day)}
+              markingType="custom"
               markedDates={{
                 [selectedString]: { 
                   selected: true, 
-                  selectedColor: '#1A5987' 
-                }
+                  selectedColor: '#5561D7',
+                },
+                [selectedString]: {
+                  customStyles: {
+                    container: {
+                      backgroundColor: '#5562d73b', 
+                      borderRadius: '50%',
+                    },
+                    text: {
+                      color: '#5561D7',
+                      fontWeight: 'bold',
+                    },
+                  },
+                },
               }}
               theme={{
-                backgroundColor: '#1A1A1A',
-                calendarBackground: '#1A1A1A',
-                textSectionTitleColor: '#fff',
-                selectedDayBackgroundColor: '#1A5987',
+                backgroundColor: '#5561D7',
+                calendarBackground: '#fff',
+                textSectionTitleColor: '#5561D7',
+                selectedDayBackgroundColor: '#5561D7',
                 selectedDayTextColor: '#ffffff',
-                todayTextColor: '#1A5987',
-                dayTextColor: '#fff',
-                textDisabledColor: '#444',
-                monthTextColor: '#fff',
-                arrowColor: '#1A5987',
+                todayTextColor: '#5561D7',
+                dayTextColor: '#959595',
+                textDisabledColor: '#4444443e',
+                monthTextColor: '#5561D7',
+                arrowColor: '#5561D7',
+                textDayHeaderFontWeight: '500',
+                textMonthFontWeight: '700',
+                textDayFontWeight: '500',
               }}
-            />
+            />         
           </View>
         </TouchableOpacity>
       </Modal>
@@ -120,21 +135,22 @@ export const CalendarDate = ({
 
 const styles = StyleSheet.create({
   input: {
-    borderWidth: 1.5,
-    backgroundColor: 'black',
+    borderWidth: 1,
+    backgroundColor: '#fff',
     flexDirection: 'row',
     alignItems: 'center',
     gap: 12,
+    borderColor: '#5561D7',
   },
 
   text: { 
-    color: '#1A5987', 
+    color: '#5561D7', 
     fontSize: 16 
   },
 
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.7)',
+    backgroundColor: 'rgba(0, 0, 0, 0.2)',
     justifyContent: 'center',
     alignItems: 'center'
   },
@@ -142,7 +158,7 @@ const styles = StyleSheet.create({
   calendarContainer: {
     width: 350,
     borderWidth: 1.5,
-    borderColor: '#3E3C41',
+    borderColor: '#5561D7',
     borderRadius: 12,
     overflow: 'hidden',
   }

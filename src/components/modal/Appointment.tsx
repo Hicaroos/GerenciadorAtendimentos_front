@@ -1,21 +1,20 @@
+import { StudentAppointmentRequest } from '@/types/appointment/studentAppointmentRequest'
+import Entypo from '@expo/vector-icons/Entypo'
 import React, { useEffect, useState } from 'react'
-import { Modal, StyleSheet, View, Text } from 'react-native'
-import { Input } from '../input'
+import { Modal, StyleSheet, Text, View } from 'react-native'
 import { Button } from '../button'
-import { Alert } from 'react-native'
-import { AppointmentsList } from '@/types/appointmentsList'
-import Entypo from '@expo/vector-icons/Entypo';
+import { Input } from '../input'
 
 type Props = {
   modalVisible : boolean;
-  onClose      : () => void;
-  onSuccess     : {
+  onClose?      : () => void;
+  onSuccess?    : {
     toast      : () => void;
     updateList : (data: any) => void;
   };
-  onFailure    : () => void;
-  appointments : AppointmentsList[];
-  editAppointmentData?: AppointmentsList;
+  onFailure?    : () => void;
+  appointments? : StudentAppointmentRequest[];
+  editAppointmentData?: StudentAppointmentRequest;
 } 
 
 const AppointmentForm = ({
@@ -39,7 +38,7 @@ const AppointmentForm = ({
   const afternoonHours = ["13:00", "14:00", "15:00", "16:00", "17:00", "18:00"];
 
   const isHourOccupied = (hour: string) => {
-    return appointments.some(appointment => appointment.hour === hour);
+
   };
 
   const renderHourButton = (hour: string) => {
@@ -49,118 +48,25 @@ const AppointmentForm = ({
     return (
       <Button 
         key={hour}
-        darkTheme={!isSelected}
         filled={isSelected}
         padding={6}
         title={hour}
         textSize="SM"
-        disabled={occupied}
-        onPress={() => !occupied && setSelectedHour(hour)}
-        unable={occupied}
+        onPress={() => {}}
       />
     );
   };
 
   const handleNewAppointment = async() => {
-    if (processing) return;
-    setProcessing(true);
     
-    if (!selectedHour || !name || !date || !phone) {
-      Alert.alert("Erro", "Por favor, preencha a data, nome, número e escolha um horário.");
-      setProcessing(false);
-      return;
-    }
-
-    const formData:AppointmentsList = {
-      id       : Math.random(), // Seria do próprio banco de dados que geraria, só botei isso pra simular msm
-      date,
-      hour     : selectedHour,
-      userName : name,
-      number   : phone
-    };
-
-    console.log("Dados do Agendamento:", formData);
-    
-    try {
-      // Simulando POST
-      await new Promise((resolve, reject) => {
-        setTimeout(() => {
-          const logic = Math.random() > 0.5; // Simular erro aleatório
-          resolve(logic);
-        }, 1000); // Simulando delay da requisição
-      });
-
-      setSelectedHour(null);
-      setName('');
-      setPhone('');
-      onSuccess.updateList(formData);
-      onSuccess.toast();
-      onClose();
-    } catch (error:any) {
-      console.error(error);
-      onFailure();
-    } finally {
-      setProcessing(false);
-    }
   };
 
   const handleEditAppointment = async(id:number) => {
-    if (processing) return;
-    setProcessing(true);
     
-    if (!selectedHour || !name || !date || !phone || !appointmentId) {
-      Alert.alert("Erro", "Por favor, preencha a data, nome, número e escolha um horário.");
-      setProcessing(false);
-      return;
-    }
-
-    const formData:AppointmentsList = {
-      id       : appointmentId,
-      date,
-      hour     : selectedHour,
-      userName : name,
-      number   : phone
-    };
-
-    console.log("Dados do Agendamento editado:", formData);
-    
-    try {
-      // Simulando PUT/PATCH
-      await new Promise((resolve, reject) => {
-        setTimeout(() => {
-          const logic = Math.random() > 0.5; // Simular erro aleatório
-          resolve(logic);
-        }, 1000); // Simulando delay da requisição
-      });
-
-      setAppointmentId(null);
-      setSelectedHour(null);
-      setName('');
-      setPhone('');
-      onSuccess.updateList(formData);
-      onSuccess.toast();
-      onClose();
-    } catch (error:any) {
-      console.error(error);
-      onFailure();
-    } finally {
-      setProcessing(false);
-    }
   }
 
   useEffect(() => {
-    if (editAppointmentData) {
-      setAppointmentId(editAppointmentData.id)
-      setName(editAppointmentData.userName);
-      setPhone(editAppointmentData.number || '');
-      setSelectedHour(editAppointmentData.hour);
-      setDate(editAppointmentData.date);
-    } else {
-      setName('');
-      setPhone('');
-      setSelectedHour(null);
-      setDate(new Date().toISOString());
-    }
+   
   }, [editAppointmentData, modalVisible]);
 
   return (
@@ -180,8 +86,8 @@ const AppointmentForm = ({
               }   
             </Text>
             <Button
+              hoverAnimation={false}
               title='X' 
-              darkTheme
               style={{ backgroundColor: 'transparent', borderWidth: 0 }}
               onPress={onClose}
             />
@@ -196,12 +102,12 @@ const AppointmentForm = ({
           />
 
           <View style={{ gap: 8 }}>
-            <Text style={{ color: '#c0c0c0', fontWeight: 'bold' }}>
+            <Text style={{ color: '#5561D7', fontWeight: 'bold' }}>
               Horários
             </Text>
 
             <View style={{ gap: 8 }}>
-              <Text style={{ color: '#c0c0c0'}}>
+              <Text style={{ color: '#5561D7'}}>
                 Manhã
               </Text>
 
@@ -211,7 +117,7 @@ const AppointmentForm = ({
             </View>
 
             <View style={{ gap: 8 }}>
-              <Text style={{ color: '#c0c0c0'}}>
+              <Text style={{ color: '#5561D7'}}>
                 Tarde
               </Text>
 
@@ -243,13 +149,7 @@ const AppointmentForm = ({
             filled
             title={editAppointmentData ? 'Editar' : 'Agendar'} 
             padding={10} 
-            onPress={() => {
-              if (editAppointmentData) {
-                handleEditAppointment(editAppointmentData.id);
-              } else {
-                handleNewAppointment()
-              }
-            }}
+            onPress={() => {}}
             unable={!selectedHour || !name || !date || !phone}
             disabled={!selectedHour || !name || !date || !phone}
           />
@@ -262,25 +162,25 @@ const AppointmentForm = ({
 const style = StyleSheet.create({
   new_appointment_modal_overlay: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.7)', 
+    backgroundColor: 'rgba(0, 0, 0, 0.4)', 
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,
   },
 
   new_appointment_modal_content: {
-    backgroundColor: '#1E1E1E',
+    backgroundColor: '#fff',
     width: '100%',
     maxWidth: 400,
     borderRadius: 12,
     padding: 14,
     borderWidth: 1.5,
-    borderColor: '#3E3C41',
+    borderColor: '#5561D7',
     gap: 16,
   },
 
   new_appointment_modal_title: {
-    color: 'white',
+    color: '#5561D7',
     fontSize: 20,
     fontWeight: 'bold',
     marginBottom: 10,

@@ -1,12 +1,10 @@
-import { hoursOnly } from '@/utils/hoursOnly';
-import React from 'react'
-import { Pressable, StyleSheet } from 'react-native';
-import { View, Text } from 'react-native';
-import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+import { Appointment } from '@/types/appointment/studentAppointmentRequest';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
-import { AppointmentsList } from '@/types/appointmentsList';
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+import React from 'react';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 
-type Props = Omit<AppointmentsList, 'id' | 'date'> & {
+type Props = Omit<Appointment, 'id' | 'date'> & {
   onEdit   : () => void;
   onRemove : () => void;
   lastItem : boolean;

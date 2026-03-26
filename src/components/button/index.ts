@@ -13,6 +13,7 @@ type BaseProps = TouchableOpacityProps & {
   processingLabel? : string  ;
   textSize?        : 'SM' | 'MD' | 'LG';
   unable?          : boolean;
+  hoverAnimation?  : boolean;
 };
 
 export type DefaultButtonProps = BaseProps;
