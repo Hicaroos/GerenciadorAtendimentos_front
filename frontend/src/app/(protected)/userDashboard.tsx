@@ -19,6 +19,7 @@ import { style } from "./style/userDashboard";
 import { AppointmentResponse } from "@/types/appointment";
 import { hoursOnly } from "@/utils/hoursOnly";
 import { isCancelableStatus, isReSchedulableStatus, toUiAppointmentStatus } from "@/utils/appointmentStatus";
+import { getTeacherDisplayName } from "@/utils/appointmentStudent";
 
 type Teacher = { id: number; name: string };
 
@@ -250,7 +251,7 @@ export default function Index() {
                   appointmentStartHour={hoursOnly(item.startDateTime)}
                   appointmentStatus={toUiAppointmentStatus(item.status) as AppointmentStatus}
                   disciplineName={item.subjectName || "Atendimento"}
-                  disciplineProfessor={item.teacherName || "Professor"}
+                  disciplineProfessor={getTeacherDisplayName(item)}
                   canCancel={isCancelableStatus(item.status)}
                   canEdit={isReSchedulableStatus(item.status)}
                   onCancel={handleRemoveAppointment}

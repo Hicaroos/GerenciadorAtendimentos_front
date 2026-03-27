@@ -17,6 +17,7 @@ import { style as userDashBoardStyle } from "./style/userDashboard";
 import { AppointmentResponse } from "@/types/appointment";
 import { hoursOnly } from "@/utils/hoursOnly";
 import { isApprovableStatus, toUiAppointmentStatus } from "@/utils/appointmentStatus";
+import { getStudentDisplayName } from "@/utils/appointmentStudent";
 import { yearMonthDayOnly } from "@/utils/yearMonthDayOnly";
 
 export default function Index() {
@@ -37,6 +38,7 @@ export default function Index() {
   const [reportCount, setReportCount] = useState<number>(0);
   const [processing, setProcessing] = useState(false);
   const [availabilityModalVisible, setAvailabilityModalVisible] = useState(false);
+  const [pendingDetailAppointment, setPendingDetailAppointment] = useState<AppointmentResponse | null>(null);
 
   const loadData = async () => {
     try {
@@ -92,6 +94,7 @@ export default function Index() {
       }
       await appointmentService.approve(id);
       setToastVisible({ message: "Solicitacao aprovada.", type: "success" });
+      setPendingDetailAppointment(null);
       await loadData();
     } catch (error: any) {
       setToastVisible({ message: error?.message || "Erro ao aprovar solicitacao.", type: "error" });
@@ -111,6 +114,7 @@ export default function Index() {
       }
       await appointmentService.deny(id);
       setToastVisible({ message: "Solicitacao recusada.", type: "success" });
+      setPendingDetailAppointment(null);
       await loadData();
     } catch (error: any) {
       setToastVisible({ message: error?.message || "Erro ao recusar solicitacao.", type: "error" });
@@ -122,6 +126,16 @@ export default function Index() {
 
   return (
     <>
+    <Modal.PendingAppointmentDetail
+      modalVisible={!!pendingDetailAppointment}
+      appointment={pendingDetailAppointment}
+      processing={processing}
+      canManage={pendingDetailAppointment ? isApprovableStatus(pendingDetailAppointment.status) : false}
+      onClose={() => setPendingDetailAppointment(null)}
+      onApprove={handleApprove}
+      onDeny={handleDeny}
+    />
+
     <Modal.AvailabilityForm
       modalVisible={availabilityModalVisible}
       onSubmit={handleCreateAvailability}
@@ -199,7 +213,8 @@ export default function Index() {
                   appointmentEndHour={hoursOnly(item.endDateTime)}
                   appointmentStartHour={hoursOnly(item.startDateTime)}
                   disciplineName={item.subjectName || "Atendimento"}
-                  studentName={item.studentName || "Aluno"}
+                  studentName={getStudentDisplayName(item)}
+                  onCardPress={() => setPendingDetailAppointment(item)}
                   onApprove={handleApprove}
                   onDeny={handleDeny}
                   canManage={isApprovableStatus(item.status)}
@@ -274,7 +289,7 @@ export default function Index() {
                   appointmentEndHour={hoursOnly(item.endDateTime)}
                   appointmentStartHour={hoursOnly(item.startDateTime)}
                   disciplineName={item.subjectName || "Atendimento"}
-                  studentName={item.studentName || "Aluno"}
+                  studentName={getStudentDisplayName(item)}
                   appointmentDate={item.startDateTime}
                 />
               )}

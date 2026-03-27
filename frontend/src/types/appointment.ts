@@ -13,8 +13,12 @@ export type AppointmentResponse = {
   status: AppointmentStatus;
   studentId?: number;
   studentName?: string;
+  studentUsername?: string;
+  professorId?: number;
+  professorName?: string;
   teacherId?: number;
   teacherName?: string;
+  teacherUsername?: string;
   locationId?: number;
   locationName?: string;
   meetingReason?: string;

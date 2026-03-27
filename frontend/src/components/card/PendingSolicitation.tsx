@@ -1,10 +1,7 @@
 import React from 'react'
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { Pressable, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import AntDesign from '@expo/vector-icons/AntDesign';
-import { AppointmentStatus } from '../card/nextAppointment';
-
-
 type Props = {
   appointmentId         : number;
   disciplineName       : string;
@@ -12,6 +9,7 @@ type Props = {
   appointmentStartHour : string;
   appointmentEndHour   : string;
   canManage?           : boolean;
+  onCardPress?         : () => void;
   onApprove?           : (appointmentId: number) => void;
   onDeny?              : (appointmentId: number) => void;
 };
@@ -23,11 +21,12 @@ const PendingSolicitation = ({
   appointmentStartHour,
   appointmentEndHour,
   canManage = true,
+  onCardPress,
   onApprove,
   onDeny,
 }:Props) => {
   return (
-    <View style={style.outter_container}>
+    <Pressable style={style.outter_container} onPress={() => onCardPress?.()}>
       <View style={style.inner_left_container}>
         <View style={style.left_container_from_inner_left_container}>
           <View style={style.discipline_icon_container}>
@@ -69,7 +68,10 @@ const PendingSolicitation = ({
           <TouchableOpacity
             style={[style.accept_solicitation_button, { opacity: canManage ? 1 : 0.4 }]}
             disabled={!canManage}
-            onPress={() => onApprove?.(appointmentId)}
+            onPress={(e) => {
+              (e as { stopPropagation?: () => void })?.stopPropagation?.();
+              onApprove?.(appointmentId);
+            }}
           >
             <AntDesign 
               name="check" 
@@ -81,7 +83,10 @@ const PendingSolicitation = ({
           <TouchableOpacity
             style={[style.deny_solicitation_button, { opacity: canManage ? 1 : 0.4 }]}
             disabled={!canManage}
-            onPress={() => onDeny?.(appointmentId)}
+            onPress={(e) => {
+              (e as { stopPropagation?: () => void })?.stopPropagation?.();
+              onDeny?.(appointmentId);
+            }}
           >
             <AntDesign 
               name="close" 
@@ -91,7 +96,7 @@ const PendingSolicitation = ({
           </TouchableOpacity>
         </View>
       </View>
-    </View>
+    </Pressable>
   )
 }
 
