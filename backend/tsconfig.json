@@ -1,17 +1,12 @@
 {
   "compilerOptions": {
-    "baseUrl": ".",
-    "paths": {
-      "@prisma/client": ["./generated/prisma"]
-    },
-    "target": "ES2020",
-    "module": "CommonJS",
-    "rootDir": ".",
-    "outDir": "dist",
-    "esModuleInterop": true,
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "target": "ES2023",
     "strict": true,
-    "skipLibCheck": true
-  },
-  "include": ["src", "generated"],
+    "esModuleInterop": true,
+    "ignoreDeprecations": "6.0",
+   },
+  "include": ["src"],
   "exclude": ["node_modules"]
 }

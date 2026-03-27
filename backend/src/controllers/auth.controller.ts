@@ -9,13 +9,13 @@ export class AuthController {
   ):Promise<Response> {
     const { name, password } = req.body;
 
-    await AuthService.login(
+    const token = await AuthService.login(
       name, 
       password,
     );
 
     return res.status(200).json({ 
-      success: 'Sucesso a fazer login!',
+      token,
     })
   }
 

@@ -15,6 +15,7 @@ datasource db {
 model User {
   id           Int     @id @default(autoincrement())
   name         String
+  password     String
   role         UserRole
   disciplines  ProfessorDiscipline
 
