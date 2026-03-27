@@ -1,8 +1,7 @@
 import { useState, useEffect } from "react";
-import { View, Text, Image, StyleSheet, TouchableOpacity } from "react-native";
+import { View, Text, Image, StyleSheet, Pressable } from "react-native";
 import { Link, router, useLocalSearchParams } from "expo-router";
 import { Button } from "@/components/button";
-import { Pressable } from "react-native";
 import { Input } from "@/components/input";
 
 import { useAuth } from "@/hooks/useAuth";
@@ -34,9 +33,10 @@ export default function Index() {
       return;
     }
     try {
-      await login(username, password);
-    } catch (error) {
-      setErrorMessage("Usuário ou senha incorretos.");
+      const expectedRole = tabSelected === "PROFESSOR" ? "ROLE_TEACHER" as const : "ROLE_STUDENT" as const;
+      await login(username, password, expectedRole);
+    } catch (error: any) {
+      setErrorMessage(error?.message || "Usuário ou senha incorretos.");
     }
   };
 

@@ -3,19 +3,20 @@ import { jwtDecode } from "jwt-decode";
 
 import { createContext, PropsWithChildren, useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { api } from "@/services/api";
+import { AUTH_STORAGE_KEY } from "@/constants/auth";
+import { authService } from "@/services/authService";
+import { AuthStorageState } from "@/types/auth";
+import { UserRole } from "@/types/common";
 
 type AuthState = {
   isAuthenticated: boolean;
   isReady?: boolean;
-  login: (username: string, password: string) => Promise<void>;
+  login: (username: string, password: string, expectedRole?: UserRole) => Promise<void>;
   logout: () => void;
   
   username: string | null;
-  role: "ROLE_TEACHER" | "ROLE_STUDENT" | null;
+  role: UserRole | null;
 };
-
-const AUTH_STORAGE_KEY = "@my-app:auth-state";
 
 export const AuthContext = createContext<AuthState>({} as AuthState);
 
@@ -26,36 +27,37 @@ export function AuthProvider({ children }: PropsWithChildren) {
   const [username, setUsername] = useState<string | null>(null);
   const [role, setRole] = useState<AuthState["role"]>(null);
 
-  async function login(username: string, password: string) {
+  async function login(username: string, password: string, expectedRole?: UserRole) {
     try {
-      const response = await api.post("/auth/login", { 
+      const response = await authService.login({ 
         username, 
         password 
       });
 
-      const { accessToken } = response.data;
+      const { accessToken } = response;
 
       const decodedToken: any = jwtDecode(accessToken);
 
-      console.log(decodedToken);
-
-      const userRole = decodedToken.scope?.includes("ROLE_TEACHER")
+      const userRole: UserRole = decodedToken.scope?.includes("ROLE_TEACHER")
         ? "ROLE_TEACHER"
         : "ROLE_STUDENT";
 
+      if (expectedRole && userRole !== expectedRole) {
+        const label = expectedRole === "ROLE_TEACHER" ? "professor" : "aluno";
+        throw new Error(`Essa conta não é de ${label}.`);
+      }
+
       const usernameFromToken = decodedToken.sub;
 
-      const authState = JSON.stringify({ 
+      const authState: AuthStorageState = { 
         accessToken, 
         role     : userRole,
         username : usernameFromToken, 
-      });
-
-      console.log(authState);
+      };
 
       await AsyncStorage.setItem(
         AUTH_STORAGE_KEY, 
-        authState
+        JSON.stringify(authState)
       );
 
       setUsername(usernameFromToken);
@@ -85,7 +87,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
     async function loadStorageState() {
       try {
         const storedState = await AsyncStorage.getItem(AUTH_STORAGE_KEY);
-        const state = storedState ? JSON.parse(storedState) : null;
+        const state = storedState ? (JSON.parse(storedState) as AuthStorageState) : null;
 
         if (state?.accessToken && state?.role) {
           setIsAuthenticated(true);
@@ -103,6 +105,25 @@ export function AuthProvider({ children }: PropsWithChildren) {
     }
 
     loadStorageState();
+  }, []);
+
+  useEffect(() => {
+    const onUnauthorized = () => {
+      setIsAuthenticated(false);
+      setRole(null);
+      setUsername(null);
+      router.replace("/login");
+    };
+
+    if (typeof window !== "undefined") {
+      window.addEventListener("auth:unauthorized", onUnauthorized);
+    }
+
+    return () => {
+      if (typeof window !== "undefined") {
+        window.removeEventListener("auth:unauthorized", onUnauthorized);
+      }
+    };
   }, []);
 
   return (

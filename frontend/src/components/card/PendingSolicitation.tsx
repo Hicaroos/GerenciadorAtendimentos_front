@@ -6,17 +6,25 @@ import { AppointmentStatus } from '../card/nextAppointment';
 
 
 type Props = {
+  appointmentId         : number;
   disciplineName       : string;
   studentName          : string;
   appointmentStartHour : string;
   appointmentEndHour   : string;
+  canManage?           : boolean;
+  onApprove?           : (appointmentId: number) => void;
+  onDeny?              : (appointmentId: number) => void;
 };
 
 const PendingSolicitation = ({
+  appointmentId,
   disciplineName,
   studentName,
   appointmentStartHour,
   appointmentEndHour,
+  canManage = true,
+  onApprove,
+  onDeny,
 }:Props) => {
   return (
     <View style={style.outter_container}>
@@ -58,7 +66,11 @@ const PendingSolicitation = ({
 
         
         <View style={style.appointment_solicitation_accept_or_deny_buttons_container}>
-          <TouchableOpacity style={style.accept_solicitation_button}>
+          <TouchableOpacity
+            style={[style.accept_solicitation_button, { opacity: canManage ? 1 : 0.4 }]}
+            disabled={!canManage}
+            onPress={() => onApprove?.(appointmentId)}
+          >
             <AntDesign 
               name="check" 
               size={18} 
@@ -66,7 +78,11 @@ const PendingSolicitation = ({
             />
           </TouchableOpacity>
             
-          <TouchableOpacity style={style.deny_solicitation_button}>
+          <TouchableOpacity
+            style={[style.deny_solicitation_button, { opacity: canManage ? 1 : 0.4 }]}
+            disabled={!canManage}
+            onPress={() => onDeny?.(appointmentId)}
+          >
             <AntDesign 
               name="close" 
               size={18} 
@@ -195,29 +211,4 @@ const style = StyleSheet.create({
 });
 
 export default PendingSolicitation;
-
-        {/* <View style={[style.appointment_status_tag, solicitationStatus === 'CONFIRMED'
-          ? style.confirmed_tag
-          : style.peding_tag
-        ]}>
-          <Text style={[style.appointment_status_tag_text, solicitationStatus === 'CONFIRMED'
-            ? style.confirmed_tag_text
-            : style.peding_tag_text
-          ]}>
-            { SOLICITATION_STATUS_MAP[solicitationStatus] }
-          </Text>
-        </View> */}
-
-
-          // const SOLICITATION_STATUS_MAP: Record<SolicitationStatus, string> = {
-  //   PENDING   : 'Pendente',
-  //   CONFIRMED : 'Confirmado',
-  // };
-
-
-  // type SolicitationStatus = AppointmentStatus;
-
-  // solicitationStatus   : SolicitationStatus;
-
-  // solicitationStatus,
 
