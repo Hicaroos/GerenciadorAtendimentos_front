@@ -58,7 +58,7 @@ export default function Register() {
     <View style={styles.container}>
       <View style={styles.left}>
         <Image
-          source={require('@/assets/sala-reunioes.jpg')}
+          source={require('@/assets/images/academicLogo.svg')}
           style={styles.leftImage}
           resizeMode="cover"
         />
@@ -70,45 +70,24 @@ export default function Register() {
             Cadastro
           </Text>
 
-          <View style={styles.role_selector_container}>
-            <Text style={styles.role_selector_label}>Tipo de conta</Text>
-            <View style={styles.role_options_row}>
-              <Pressable
-                style={styles.role_option}
-                onPress={() => setRoleSelected("STUDENT")}
-              >
-                <View style={[
-                  styles.radio_outer,
-                  roleSelected === "STUDENT" && styles.radio_outer_selected,
-                ]}>
-                  {roleSelected === "STUDENT" && <View style={styles.radio_inner} />}
-                </View>
-                <Text style={[
-                  styles.role_option_text,
-                  roleSelected === "STUDENT" && styles.role_option_text_selected,
-                ]}>
-                  Aluno
-                </Text>
-              </Pressable>
+          <View style={styles.switch_tab_buttons_container}>
+            <Pressable 
+            style={roleSelected === 'STUDENT' ? styles.selected_switch_tab_button : styles.unselected_switch_tab_button}
+            onPress={() => setRoleSelected('STUDENT')}
+            >
+              <Text style={roleSelected === 'STUDENT' ? styles.selected_switch_tab_button_text : styles.unselected_switch_tab_button_text}>
+                Aluno
+              </Text>
+            </Pressable>     
 
-              <Pressable
-                style={styles.role_option}
-                onPress={() => setRoleSelected("PROFESSOR")}
-              >
-                <View style={[
-                  styles.radio_outer,
-                  roleSelected === "PROFESSOR" && styles.radio_outer_selected,
-                ]}>
-                  {roleSelected === "PROFESSOR" && <View style={styles.radio_inner} />}
-                </View>
-                <Text style={[
-                  styles.role_option_text,
-                  roleSelected === "PROFESSOR" && styles.role_option_text_selected,
-                ]}>
-                  Professor
-                </Text>
-              </Pressable>
-            </View>
+            <Pressable 
+            style={roleSelected === 'PROFESSOR' ? styles.selected_switch_tab_button : styles.unselected_switch_tab_button}
+            onPress={() => setRoleSelected('PROFESSOR')}
+            >
+              <Text style={roleSelected === 'PROFESSOR' ? styles.selected_switch_tab_button_text : styles.unselected_switch_tab_button_text}>
+                Professor
+              </Text>
+            </Pressable>      
           </View>
 
           <View style={styles.inputContainer}>
@@ -167,13 +146,14 @@ const styles = StyleSheet.create({
   left: {
     flex: 45,
     overflow: "hidden",
-    backgroundColor: "#1a2744",
+    backgroundColor: "#5562d754",
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 
   leftImage: {
-    ...StyleSheet.absoluteFillObject,
-    width: "100%",
-    height: "100%",
+    width: "50%",
+    height: "50%",
   },
 
   right: {
@@ -263,5 +243,37 @@ const styles = StyleSheet.create({
     height: 12,
     borderRadius: 6,
     backgroundColor: "#5561D7",
+  },
+
+  switch_tab_buttons_container: {
+    flexDirection: 'row',
+  },
+
+  unselected_switch_tab_button: {
+    borderBottomWidth: 1,
+    borderBottomColor: '#656565',
+    padding: 20,
+    flex: 1,
+  },
+
+  unselected_switch_tab_button_text: {
+    fontWeight: 'bold',
+    color: '#656565',
+    fontSize: 16,
+    textAlign: 'center',
+  },
+
+  selected_switch_tab_button: {
+    borderBottomWidth: 4,
+    borderBottomColor: '#5561D7',
+    padding: 20,
+    flex: 1,
+  },
+
+  selected_switch_tab_button_text: {
+    fontWeight: 'bold',
+    color: '#5561D7',
+    fontSize: 16,
+    textAlign: 'center',
   },
 });

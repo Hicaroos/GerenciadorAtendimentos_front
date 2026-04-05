@@ -3,6 +3,9 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import Octicons from '@expo/vector-icons/Octicons';
 import { AppointmentStatus } from '.';
+import { yearMonthDayOnly } from '@/utils/yearMonthDayOnly';
+import { MaterialIcons } from '@expo/vector-icons';
+import { howMuchTimeToAppointment } from '@/utils/howMuchTimeToAppointment';
 
 type Props = {
   disciplineName       : string;
@@ -19,6 +22,9 @@ const FromProfessor = ({
   appointmentEndHour,
   appointmentDate,
 }:Props) => {
+
+  const timeToAppoitment = howMuchTimeToAppointment(appointmentDate);
+
   return (
     <View style={style.outter_container}>
       <View style={style.inner_left_container}>
@@ -42,15 +48,30 @@ const FromProfessor = ({
 
         <View style={style.right_container_from_inner_left_container}>
           <View style={style.appointment_hour_container}>
-            <MaterialCommunityIcons 
-              name="clock-time-nine-outline" 
-              size={16} 
-              color="gray" 
-            />
+            <View style={{ gap: 4 }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+                <MaterialIcons 
+                  name="calendar-month" 
+                  size={16} 
+                  color="gray" 
+                />
 
-            <Text style={style.appointment_hour}>
-              { appointmentStartHour } - { appointmentEndHour }
-            </Text>
+                <Text style={style.appointment_hour}>
+                  { yearMonthDayOnly(appointmentDate, true) }
+                </Text>
+              </View>
+
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+                <MaterialCommunityIcons 
+                  name="clock-time-nine-outline" 
+                  size={16} 
+                  color="gray" 
+                />
+                <Text style={style.appointment_hour}>
+                  { appointmentStartHour } - { appointmentEndHour }
+                </Text>
+              </View>
+            </View>
           </View>
         </View>
       </View>
@@ -58,7 +79,7 @@ const FromProfessor = ({
       <View style={style.inner_right_container}>
         <View style={style.time_left_to_next_appointment_tag}>
           <Text style={style.time_left_to_next_appointment_text}>
-            Amanhã
+            { timeToAppoitment }
           </Text>
         </View>
       </View>

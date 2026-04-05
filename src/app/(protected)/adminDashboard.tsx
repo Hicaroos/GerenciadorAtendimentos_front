@@ -19,6 +19,8 @@ import { hoursOnly } from "@/utils/hoursOnly";
 import { isApprovableStatus, toUiAppointmentStatus } from "@/utils/appointmentStatus";
 import { getStudentDisplayName } from "@/utils/appointmentStudent";
 import { yearMonthDayOnly } from "@/utils/yearMonthDayOnly";
+import NoListContent from "@/components/ui/NoListContent";
+import { Toast } from "@/components/ui/Toast";
 
 export default function Index() {
   const { logout, role, username } = useAuth();
@@ -39,6 +41,13 @@ export default function Index() {
   const [processing, setProcessing] = useState(false);
   const [availabilityModalVisible, setAvailabilityModalVisible] = useState(false);
   const [pendingDetailAppointment, setPendingDetailAppointment] = useState<AppointmentResponse | null>(null);
+  const [showAllList, setShowAllList] = useState<{
+    solicitations: boolean;
+    appoitments: boolean;
+  }>({
+    solicitations: false, 
+    appoitments: false
+  });
 
   const loadData = async () => {
     try {
@@ -52,7 +61,7 @@ export default function Index() {
       setApprovedAppointments(approved);
       setReportCount(report.items?.length || 0);
     } catch (error: any) {
-      setToastVisible({ message: error?.message || "Erro ao carregar painel.", type: "error" });
+      setToastVisible({ message: error?.message || "Erro ao carregar painel", type: "error" });
     }
   };
 
@@ -66,10 +75,10 @@ export default function Index() {
   }) => {
     try {
       await availabilityService.create(data);
-      setToastVisible({ message: "Disponibilidade cadastrada com sucesso.", type: "success" });
+      setToastVisible({ message: "Disponibilidade cadastrada com sucesso", type: "success" });
       await loadData();
     } catch (error: any) {
-      setToastVisible({ message: error?.message || "Erro ao cadastrar disponibilidade.", type: "error" });
+      setToastVisible({ message: error?.message || "Erro ao cadastrar disponibilidade", type: "error" });
     }
   };
 
@@ -89,15 +98,15 @@ export default function Index() {
     try {
       const target = pendingAppointments.find((item) => item.id === id);
       if (!target || !isApprovableStatus(target.status)) {
-        setToastVisible({ message: "Solicitacao nao pode ser aprovada.", type: "error" });
+        setToastVisible({ message: "Solicitacao nao pode ser aprovada", type: "error" });
         return;
       }
       await appointmentService.approve(id);
-      setToastVisible({ message: "Solicitacao aprovada.", type: "success" });
+      setToastVisible({ message: "Solicitacao aprovada", type: "success" });
       setPendingDetailAppointment(null);
       await loadData();
     } catch (error: any) {
-      setToastVisible({ message: error?.message || "Erro ao aprovar solicitacao.", type: "error" });
+      setToastVisible({ message: error?.message || "Erro ao aprovar solicitacao", type: "error" });
     } finally {
       setProcessing(false);
     }
@@ -109,15 +118,15 @@ export default function Index() {
     try {
       const target = pendingAppointments.find((item) => item.id === id);
       if (!target || !isApprovableStatus(target.status)) {
-        setToastVisible({ message: "Solicitacao nao pode ser recusada.", type: "error" });
+        setToastVisible({ message: "Solicitacao nao pode ser recusada", type: "error" });
         return;
       }
       await appointmentService.deny(id);
-      setToastVisible({ message: "Solicitacao recusada.", type: "success" });
+      setToastVisible({ message: "Solicitacao recusada", type: "success" });
       setPendingDetailAppointment(null);
       await loadData();
     } catch (error: any) {
-      setToastVisible({ message: error?.message || "Erro ao recusar solicitacao.", type: "error" });
+      setToastVisible({ message: error?.message || "Erro ao recusar solicitacao", type: "error" });
     } finally {
       setProcessing(false);
     }
@@ -140,6 +149,13 @@ export default function Index() {
       modalVisible={availabilityModalVisible}
       onSubmit={handleCreateAvailability}
       onClose={() => setAvailabilityModalVisible(false)}
+    />
+
+    <Toast
+      message={toastVisible?.message || '[Não foi possível exibir a mensagem]'}
+      onClose={() => setToastVisible(null)}
+      visible={!!toastVisible}
+      type={toastVisible?.type}
     />
 
     <ScrollView style={userDashBoardStyle.wrapper_container}>
@@ -171,10 +187,6 @@ export default function Index() {
               Aqui está o resumo dos seus agendamentos
             </Text>
           </View>
-
-          <View>
-            <Input.Search/>         
-          </View>
         </View>
 
         <View style={userDashBoardStyle.dashboard_stats_cards_container}>
@@ -195,23 +207,28 @@ export default function Index() {
                 Solicitações Pendentes
               </Text>
 
-              <Button
-                title="Ver todas"
-                padding={8}
-                textSize="SM"
-                borderRadius={32}
-              />  
+              { (!showAllList.solicitations && pendingAppointments.length > 0 ) && 
+                <Button
+                  title="Ver todas"
+                  padding={8}
+                  textSize="SM"
+                  borderRadius={32}
+                  onPress={() => setShowAllList(prev => ({...prev, solicitations: true}))}
+                />  
+              }
             </View>
 
             <FlatList
-              data={pendingAppointments.slice(0, 4)}
+              data={showAllList.solicitations ? pendingAppointments : pendingAppointments.slice(0, 4)}
               keyExtractor={(item) => String(item.id)}
               contentContainerStyle={style.peding_solicitations_list}
+              ListEmptyComponent={<NoListContent message="Nenhuma solicitação pendente no momento!" />}
               renderItem={({ item }) => (
                 <Card.PendingSolicitation
                   appointmentId={item.id}
                   appointmentEndHour={hoursOnly(item.endDateTime)}
                   appointmentStartHour={hoursOnly(item.startDateTime)}
+                  appointmentDate={item.startDateTime}
                   disciplineName={item.subjectName || "Atendimento"}
                   studentName={getStudentDisplayName(item)}
                   onCardPress={() => setPendingDetailAppointment(item)}
@@ -272,18 +289,22 @@ export default function Index() {
                 Próximos Agendamentos
               </Text>
 
-              <Button
-                title="Ver todas"
-                padding={8}
-                textSize="SM"
-                borderRadius={32}
-              />  
+              { (!showAllList.appoitments && approvedAppointments.length > 0) &&
+                <Button
+                  title="Ver todas"
+                  padding={8}
+                  textSize="SM"
+                  borderRadius={32}
+                  onPress={() => setShowAllList(prev => ({...prev, appoitments: true}))}
+                />  
+              }
             </View>
 
             <FlatList
-              data={approvedAppointments.slice(0, 4)}
+              data={showAllList.appoitments ? approvedAppointments : approvedAppointments.slice(0, 4)}
               keyExtractor={(item) => String(item.id)}
               contentContainerStyle={style.next_appointments_list}
+              ListEmptyComponent={<NoListContent message="Nenhum agendamento no momento!" />}
               renderItem={({ item }) => (                  
                 <Card.NextAppointment.FromProfessor
                   appointmentEndHour={hoursOnly(item.endDateTime)}
@@ -297,26 +318,33 @@ export default function Index() {
           </View>
 
           <View style={style.professor_disciplines_container}>
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginHorizontal: 20, marginTop: 20 }}>
-              <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#5561D7' }}>
+            <View style={style.professor_availibity_container}>
+              <Text style={style.professor_availibity_title}>
                 Minha Disponibilidade
               </Text>
 
               <Button.WithIcon
                 title="Adicionar"
+                fullWidth
                 iconFamily={AntDesign}
-                iconName="plus-circle"
+                iconName="plus"
                 iconSide="RIGHT"
                 padding={6}
                 textSize="SM"
                 borderRadius={32}
                 onPress={() => setAvailabilityModalVisible(true)}
               />
-            </View>
 
-            <Text style={{ color: "#6f6f6f", marginLeft: 20, marginTop: 8 }}>
-              Relatórios desta semana: {reportCount}
-            </Text>
+              <View style={style.professor_reports_container}>
+                <Text style={style.professor_reports_label}>
+                  Relatórios desta semana:
+                </Text>
+
+                <Text style={style.professor_reports_numbers}>
+                  { reportCount }
+                </Text>
+              </View>
+            </View>      
           </View>
         </View>
       </View>

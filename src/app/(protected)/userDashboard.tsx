@@ -20,6 +20,8 @@ import { AppointmentResponse } from "@/types/appointment";
 import { hoursOnly } from "@/utils/hoursOnly";
 import { isCancelableStatus, isReSchedulableStatus, toUiAppointmentStatus } from "@/utils/appointmentStatus";
 import { getTeacherDisplayName } from "@/utils/appointmentStudent";
+import NoListContent from "@/components/ui/NoListContent";
+import { Toast } from "@/components/ui/Toast";
 
 type Teacher = { id: number; name: string };
 
@@ -43,7 +45,7 @@ export default function Index() {
 
   const [toastVisible, setToastVisible] = useState<{
     message : string;
-    type    : 'success' | 'error';
+    type    : 'success' | 'error' | 'info';
   } | null>(null);
 
   const [todayDate] = useState<string>(yearMonthDayOnly(new Date()));
@@ -51,6 +53,7 @@ export default function Index() {
   const [appointments, setAppointments] = useState<AppointmentResponse[]>([]);
   const [teachers, setTeachers] = useState<Teacher[]>([]);
   const [loadingTeachers, setLoadingTeachers] = useState(false);
+  const [showAllAppointments, setShowAllAppoitments] = useState<boolean>(false);
 
   const loadData = async () => {
     try {
@@ -59,7 +62,7 @@ export default function Index() {
       ]);
       setAppointments(myAppointments);
     } catch (error: any) {
-      setToastVisible({ message: error?.message || "Erro ao carregar dados.", type: "error" });
+      setToastVisible({ message: error?.message || "Erro ao carregar dados", type: "error" });
     }
   };
 
@@ -92,12 +95,12 @@ export default function Index() {
     try {
       const target = appointments.find((item) => item.id === id);
       if (!target || !isCancelableStatus(target.status)) {
-        setToastVisible({ message: "Esse agendamento nao pode ser cancelado.", type: "error" });
+        setToastVisible({ message: "Esse agendamento nao pode ser cancelado", type: "error" });
         return;
       }
 
       await appointmentService.cancel(id);
-      setToastVisible({ message: "Agendamento cancelado com sucesso.", type: "success" });
+      setToastVisible({ message: "Agendamento cancelado com sucesso", type: "success" });
       await loadData();
     } catch (error: any) {
       setToastVisible({ message: error?.message || "Erro ao cancelar agendamento.", type: "error" });
@@ -125,7 +128,7 @@ export default function Index() {
       meetingReason: data.meetingReason,
     });
 
-    setToastVisible({ message: "Solicitação enviada com sucesso.", type: "success" });
+    setToastVisible({ message: "Solicitação enviada com sucesso", type: "success" });
     setModalVisible(null);
     await loadData();
   };
@@ -136,13 +139,13 @@ export default function Index() {
     try {
       const target = appointments.find((item) => item.id === id);
       if (!target || !isReSchedulableStatus(target.status)) {
-        setToastVisible({ message: "Esse agendamento nao pode ser reagendado.", type: "error" });
+        setToastVisible({ message: "Esse agendamento nao pode ser reagendado", type: "error" });
         return;
       }
 
-      setToastVisible({ message: "Use o modal de agendamento para reagendar.", type: "error" });
+      setToastVisible({ message: "Use o modal de agendamento para reagendar", type: "info" });
     } catch (error: any) {
-      setToastVisible({ message: error?.message || "Erro ao reagendar.", type: "error" });
+      setToastVisible({ message: error?.message || "Erro ao reagendar", type: "error" });
     } finally {
       setProcessing(false);
     }
@@ -172,6 +175,13 @@ export default function Index() {
       loadingTeachers={loadingTeachers}
       onSubmit={handleNewAppointment}
       onClose={() => setModalVisible(null)}
+    />
+
+    <Toast
+      message={toastVisible?.message || '[Não foi possível exibir a mensagem]'}
+      onClose={() => setToastVisible(null)}
+      visible={!!toastVisible}
+      type={toastVisible?.type}
     />
 
     <ScrollView style={style.wrapper_container}>
@@ -204,10 +214,6 @@ export default function Index() {
               Aqui está o resumo dos seus agendamentos
             </Text>
           </View>
-
-          <View>
-            <Input.Search/>         
-          </View>
         </View>
 
         <View style={style.dashboard_stats_cards_container}>
@@ -228,27 +234,41 @@ export default function Index() {
                 Próximos Agendamentos
               </Text>
 
-              <Button.WithIcon
-                title="Novo Agendamento"
-                iconFamily={AntDesign}
-                iconName={'plus-circle'}
-                iconSide={'RIGHT'}
-                padding={8}
-                textSize="SM"
-                borderRadius={32}
-                onPress={handleOpenNewAppointmentModal}
-              />  
+              <View style={{ flexDirection: 'row', gap: 8 }}>
+                { (!showAllAppointments && sortedAppointments.length > 0) &&
+                  <Button
+                    title="Ver todas"
+                    padding={8}
+                    textSize="SM"
+                    borderRadius={32}
+                    onPress={() => setShowAllAppoitments(true)}
+                  /> 
+                }
+
+                <Button.WithIcon
+                  title="Novo Agendamento"
+                  iconFamily={AntDesign}
+                  iconName={'plus'}
+                  iconSide={'RIGHT'}
+                  padding={8}
+                  textSize="SM"
+                  borderRadius={32}
+                  onPress={handleOpenNewAppointmentModal}
+                />                
+              </View>
             </View>
 
             <FlatList
-              data={sortedAppointments}
+              data={showAllAppointments ? sortedAppointments : sortedAppointments.slice(0, 4)}
               keyExtractor={(item) => String(item.id)}
               contentContainerStyle={style.next_appointments_list}
+              ListEmptyComponent={<NoListContent message="Nenhum agendamento no momento!" />}
               renderItem={({ item }) => (
                 <Card.NextAppointment.FromStudent 
                   appointmentId={item.id}
                   appointmentEndHour={hoursOnly(item.endDateTime)}
                   appointmentStartHour={hoursOnly(item.startDateTime)}
+                  appointmentDay={item.startDateTime}
                   appointmentStatus={toUiAppointmentStatus(item.status) as AppointmentStatus}
                   disciplineName={item.subjectName || "Atendimento"}
                   disciplineProfessor={getTeacherDisplayName(item)}

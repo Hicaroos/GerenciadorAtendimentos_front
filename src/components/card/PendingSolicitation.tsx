@@ -2,11 +2,14 @@ import React from 'react'
 import { Pressable, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import AntDesign from '@expo/vector-icons/AntDesign';
+import { MaterialIcons } from '@expo/vector-icons';
+import { yearMonthDayOnly } from '@/utils/yearMonthDayOnly';
 type Props = {
-  appointmentId         : number;
+  appointmentId        : number;
   disciplineName       : string;
   studentName          : string;
   appointmentStartHour : string;
+  appointmentDate      : string;
   appointmentEndHour   : string;
   canManage?           : boolean;
   onCardPress?         : () => void;
@@ -20,6 +23,7 @@ const PendingSolicitation = ({
   studentName,
   appointmentStartHour,
   appointmentEndHour,
+  appointmentDate,
   canManage = true,
   onCardPress,
   onApprove,
@@ -48,15 +52,30 @@ const PendingSolicitation = ({
 
         <View style={style.right_container_from_inner_left_container}>
           <View style={style.appointment_hour_container}>
-            <MaterialCommunityIcons 
-              name="clock-time-nine-outline" 
-              size={16} 
-              color="gray" 
-            />
+            <View style={{ gap: 4 }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+                <MaterialIcons 
+                  name="calendar-month" 
+                  size={16} 
+                  color="gray" 
+                />
 
-            <Text style={style.appointment_hour}>
-              { appointmentStartHour } - { appointmentEndHour }
-            </Text>
+                <Text style={style.appointment_hour}>
+                  { yearMonthDayOnly(appointmentDate, true) }
+                </Text>
+              </View>
+
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+                <MaterialCommunityIcons 
+                  name="clock-time-nine-outline" 
+                  size={16} 
+                  color="gray" 
+                />
+                <Text style={style.appointment_hour}>
+                  { appointmentStartHour } - { appointmentEndHour }
+                </Text>
+              </View>
+            </View>
           </View>
         </View>
       </View>

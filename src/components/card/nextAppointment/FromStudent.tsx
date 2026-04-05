@@ -4,12 +4,15 @@ import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import Octicons from '@expo/vector-icons/Octicons';
 import { AppointmentStatus } from '.';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import FontAwesome from '@expo/vector-icons/FontAwesome';
+import { yearMonthDayOnly } from '@/utils/yearMonthDayOnly';
 
 type Props = {
-  appointmentId         : number;
+  appointmentId        : number;
   disciplineName       : string;
   disciplineProfessor  : string;
   appointmentStartHour : string;
+  appointmentDay        : string;
   appointmentEndHour   : string;
   appointmentStatus    : AppointmentStatus;
   canEdit?             : boolean;
@@ -23,6 +26,7 @@ const FromStudent = ({
   disciplineName,
   disciplineProfessor,
   appointmentStartHour,
+  appointmentDay,
   appointmentEndHour,
   appointmentStatus,
   canEdit = false,
@@ -34,8 +38,8 @@ const FromStudent = ({
   const APPOINTMENT_STATUS_MAP: Record<AppointmentStatus, string> = {
     PENDING   : 'Pendente',
     CONFIRMED : 'Confirmado',
-    DENIED: "Recusado",
-    CANCELLED: "Cancelado",
+    DENIED    : "Recusado",
+    CANCELLED : "Cancelado",
   };
 
   return (
@@ -61,15 +65,31 @@ const FromStudent = ({
 
         <View style={style.right_container_from_inner_left_container}>
           <View style={style.appointment_hour_container}>
-            <MaterialCommunityIcons 
-              name="clock-time-nine-outline" 
-              size={16} 
-              color="gray" 
-            />
 
-            <Text style={style.appointment_hour}>
-              { appointmentStartHour } - { appointmentEndHour }
-            </Text>
+            <View style={{ gap: 4 }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+                <MaterialIcons 
+                  name="calendar-month" 
+                  size={16} 
+                  color="gray" 
+                />
+
+                <Text style={style.appointment_hour}>
+                  { yearMonthDayOnly(appointmentDay, true) }
+                </Text>
+              </View>
+
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+                <MaterialCommunityIcons 
+                  name="clock-time-nine-outline" 
+                  size={16} 
+                  color="gray" 
+                />
+                <Text style={style.appointment_hour}>
+                  { appointmentStartHour } - { appointmentEndHour }
+                </Text>
+              </View>
+            </View>
           </View>
         </View>
       </View>
@@ -93,27 +113,33 @@ const FromStudent = ({
           </Text>
         </View>
 
-        <View style={{ flexDirection: "row", gap: 8 }}>
-        <TouchableOpacity
-          disabled={!canEdit}
-          onPress={() => onEdit?.(appointmentId)}
-          style={{ opacity: canEdit ? 1 : 0.4 }}
-        >
-          <Octicons 
-            name="pencil" 
-            size={18} 
-            color="#5E6BEF" 
-          />
-        </TouchableOpacity>
+        { (appointmentStatus === 'CONFIRMED' || appointmentStatus === 'PENDING') &&
+          <View style={{ flexDirection: "row", gap: 8 }}>
+            <TouchableOpacity
+            disabled={!canEdit}
+            onPress={() => onEdit?.(appointmentId)}
+            style={{ opacity: canEdit ? 1 : 0.4 }}
+            >
+              <Octicons 
+                name="pencil" 
+                size={18} 
+                color="#5E6BEF" 
+              />
+            </TouchableOpacity>
 
-        <TouchableOpacity
-          disabled={!canCancel}
-          onPress={() => onCancel?.(appointmentId)}
-          style={{ opacity: canCancel ? 1 : 0.4 }}
-        >
-          <MaterialIcons name="cancel" size={18} color="#AB5E5E" />
-        </TouchableOpacity>
-        </View>
+            <TouchableOpacity
+            disabled={!canCancel}
+            onPress={() => onCancel?.(appointmentId)}
+            style={{ opacity: canCancel ? 1 : 0.4 }}
+            >
+              <FontAwesome 
+                name="trash-o" 
+                size={18} 
+                color="#5E6BEF" 
+              />
+            </TouchableOpacity>
+          </View>
+        }
       </View>
     </View>
   )

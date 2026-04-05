@@ -44,7 +44,7 @@ export default function Index() {
     <View style={styles.container}>
       <View style={styles.left}>
         <Image
-          source={require('@/assets/sala-reunioes.jpg')}
+          source={require('@/assets/images/academicLogo.svg')}
           style={styles.leftImage}
           resizeMode="cover"
         />
@@ -123,13 +123,14 @@ const styles = StyleSheet.create({
   left: {
     flex: 45,
     overflow: "hidden",
-    backgroundColor: "#1a2744",
+    backgroundColor: "#5562d754",
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 
   leftImage: {
-    ...StyleSheet.absoluteFillObject,
-    width: "100%",
-    height: "100%",
+    width: "50%",
+    height: "50%",
   },
 
   right: {

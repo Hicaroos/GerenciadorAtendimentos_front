@@ -3,6 +3,7 @@ import { availabilityService } from '@/services/availabilityService'
 import { yearMonthDayOnly } from '@/utils/yearMonthDayOnly'
 import React, { useEffect, useState } from 'react'
 import { ActivityIndicator, Modal, ScrollView, StyleSheet, Text, View } from 'react-native'
+import Entypo from '@expo/vector-icons/Entypo';
 import { Button } from '../button'
 import { Input } from '../input'
 
@@ -221,6 +222,8 @@ const AppointmentForm = ({
               </View>
 
               <Input.Default.WithIcon
+                iconFamily={Entypo}
+                iconName='text'
                 hasLabel
                 value={meetingReason}
                 label="Motivo da reunião (mín. 5 caracteres)"

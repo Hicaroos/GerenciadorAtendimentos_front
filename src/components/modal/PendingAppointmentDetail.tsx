@@ -37,17 +37,17 @@ const PendingAppointmentDetail = ({
   const open = modalVisible && !!appointment;
   const dateLabel = appointment ? yearMonthDayOnly(appointment.startDateTime, true) : '';
   const hourLabel = appointment
-    ? `${hoursOnly(appointment.startDateTime)} – ${hoursOnly(appointment.endDateTime)}`
+    ? `${hoursOnly(appointment.startDateTime)} - ${hoursOnly(appointment.endDateTime)}`
     : '';
   const statusKey = appointment ? toUiAppointmentStatus(appointment.status) : 'PENDING';
   const statusLabel = statusLabelPt[statusKey];
 
   return (
     <Modal
-      animationType="fade"
-      transparent
-      visible={open}
-      onRequestClose={onClose}
+    animationType="fade"
+    transparent
+    visible={open}
+    onRequestClose={onClose}
     >
       <View style={styles.overlay}>
         <View style={styles.content}>
@@ -63,7 +63,10 @@ const PendingAppointmentDetail = ({
                 />
               </View>
 
-              <ScrollView showsVerticalScrollIndicator={false} style={styles.scroll}>
+              <ScrollView 
+              showsVerticalScrollIndicator={false} 
+              style={styles.scroll}
+              >
                 <View style={styles.row}>
                   <Text style={styles.label}>Aluno</Text>
                   <Text style={styles.value}>{getStudentDisplayName(appointment)}</Text>
@@ -171,7 +174,7 @@ const styles = StyleSheet.create({
   label: {
     color: '#5561D7',
     fontWeight: 'bold',
-    fontSize: 12,
+    fontSize: 14,
     marginBottom: 4,
   },
   value: {

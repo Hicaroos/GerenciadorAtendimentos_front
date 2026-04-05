@@ -1,12 +1,13 @@
 import React, { useEffect, useRef } from 'react';
 import { Animated, Text, TouchableOpacity, StyleSheet, View, Dimensions } from 'react-native';
 import { AntDesign } from '@expo/vector-icons';
+import Fontisto from '@expo/vector-icons/Fontisto';
 
 type ToastProps = {
   message : string;
   visible : boolean;
   onClose : () => void;
-  type?   : 'success' | 'error';
+  type?   : 'success' | 'error' | 'info';
 };
 
 export function Toast({ message, visible, onClose, type = 'success' }: ToastProps) {
@@ -42,15 +43,27 @@ export function Toast({ message, visible, onClose, type = 'success' }: ToastProp
       style={[
         styles.container, 
         { transform: [{ translateX }] },
-        type === 'error' ? styles.error : styles.success
+        type === 'error' 
+          ? styles.error 
+        : type === 'success' 
+          ? styles.success 
+        : styles.info
       ]}
     >
       <View style={styles.content}>
-        <AntDesign 
-          name={type === 'success' ? "check-circle" : "exclamation-circle"} 
-          size={18} 
-          color="white" 
-        />
+        { type !== 'info' ? (
+          <AntDesign 
+            name={type === 'success' ? "check" : "exclamation"} 
+            size={18} 
+            color="white" 
+          />
+        ) : (
+          <Fontisto 
+            name="info" 
+            size={18} 
+            color="white" 
+          />
+        )}
         <Text style={styles.message}>
           {message}
         </Text>
@@ -66,7 +79,7 @@ export function Toast({ message, visible, onClose, type = 'success' }: ToastProp
 const styles = StyleSheet.create({
   container: {
     position: 'absolute',
-    top: 50, 
+    top: 75, 
     right: 20, 
     padding: 16,
     borderRadius: 8,
@@ -85,6 +98,10 @@ const styles = StyleSheet.create({
 
   success: { 
     backgroundColor: '#2e7d32' 
+  },
+
+  info: { 
+    backgroundColor: '#2d60f9' 
   },
 
   error: { 
