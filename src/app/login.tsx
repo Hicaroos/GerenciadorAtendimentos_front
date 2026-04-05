@@ -1,8 +1,7 @@
 import { useState, useEffect } from "react";
-import { View, Text, Image, StyleSheet, TouchableOpacity } from "react-native";
+import { View, Text, Image, StyleSheet, Pressable } from "react-native";
 import { Link, router, useLocalSearchParams } from "expo-router";
 import { Button } from "@/components/button";
-import { Pressable } from "react-native";
 import { Input } from "@/components/input";
 
 import { useAuth } from "@/hooks/useAuth";
@@ -34,9 +33,10 @@ export default function Index() {
       return;
     }
     try {
-      await login(username, password);
-    } catch (error) {
-      setErrorMessage("Usuário ou senha incorretos.");
+      const expectedRole = tabSelected === "PROFESSOR" ? "ROLE_TEACHER" as const : "ROLE_STUDENT" as const;
+      await login(username, password, expectedRole);
+    } catch (error: any) {
+      setErrorMessage(error?.message || "Usuário ou senha incorretos.");
     }
   };
 
@@ -45,8 +45,8 @@ export default function Index() {
       <View style={styles.left}>
         <Image
           source={require('@/assets/images/academicLogo.svg')}
-          style={{ width: 500, height: 500 }}
-          resizeMode="contain" 
+          style={styles.leftImage}
+          resizeMode="cover"
         />
       </View>
 
@@ -121,10 +121,16 @@ const styles = StyleSheet.create({
   },
 
   left: {
-    backgroundColor: "#5561D7",
     flex: 45,
-    justifyContent: "center",
-    alignItems: "center",
+    overflow: "hidden",
+    backgroundColor: "#5562d754",
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+
+  leftImage: {
+    width: "50%",
+    height: "50%",
   },
 
   right: {

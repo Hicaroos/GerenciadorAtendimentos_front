@@ -1,25 +1,36 @@
 import React from 'react'
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { Pressable, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import AntDesign from '@expo/vector-icons/AntDesign';
-import { AppointmentStatus } from '../card/nextAppointment';
-
-
+import { MaterialIcons } from '@expo/vector-icons';
+import { yearMonthDayOnly } from '@/utils/yearMonthDayOnly';
 type Props = {
+  appointmentId        : number;
   disciplineName       : string;
   studentName          : string;
   appointmentStartHour : string;
+  appointmentDate      : string;
   appointmentEndHour   : string;
+  canManage?           : boolean;
+  onCardPress?         : () => void;
+  onApprove?           : (appointmentId: number) => void;
+  onDeny?              : (appointmentId: number) => void;
 };
 
 const PendingSolicitation = ({
+  appointmentId,
   disciplineName,
   studentName,
   appointmentStartHour,
   appointmentEndHour,
+  appointmentDate,
+  canManage = true,
+  onCardPress,
+  onApprove,
+  onDeny,
 }:Props) => {
   return (
-    <View style={style.outter_container}>
+    <Pressable style={style.outter_container} onPress={() => onCardPress?.()}>
       <View style={style.inner_left_container}>
         <View style={style.left_container_from_inner_left_container}>
           <View style={style.discipline_icon_container}>
@@ -41,15 +52,30 @@ const PendingSolicitation = ({
 
         <View style={style.right_container_from_inner_left_container}>
           <View style={style.appointment_hour_container}>
-            <MaterialCommunityIcons 
-              name="clock-time-nine-outline" 
-              size={16} 
-              color="gray" 
-            />
+            <View style={{ gap: 4 }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+                <MaterialIcons 
+                  name="calendar-month" 
+                  size={16} 
+                  color="gray" 
+                />
 
-            <Text style={style.appointment_hour}>
-              { appointmentStartHour } - { appointmentEndHour }
-            </Text>
+                <Text style={style.appointment_hour}>
+                  { yearMonthDayOnly(appointmentDate, true) }
+                </Text>
+              </View>
+
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+                <MaterialCommunityIcons 
+                  name="clock-time-nine-outline" 
+                  size={16} 
+                  color="gray" 
+                />
+                <Text style={style.appointment_hour}>
+                  { appointmentStartHour } - { appointmentEndHour }
+                </Text>
+              </View>
+            </View>
           </View>
         </View>
       </View>
@@ -58,7 +84,14 @@ const PendingSolicitation = ({
 
         
         <View style={style.appointment_solicitation_accept_or_deny_buttons_container}>
-          <TouchableOpacity style={style.accept_solicitation_button}>
+          <TouchableOpacity
+            style={[style.accept_solicitation_button, { opacity: canManage ? 1 : 0.4 }]}
+            disabled={!canManage}
+            onPress={(e) => {
+              (e as { stopPropagation?: () => void })?.stopPropagation?.();
+              onApprove?.(appointmentId);
+            }}
+          >
             <AntDesign 
               name="check" 
               size={18} 
@@ -66,7 +99,14 @@ const PendingSolicitation = ({
             />
           </TouchableOpacity>
             
-          <TouchableOpacity style={style.deny_solicitation_button}>
+          <TouchableOpacity
+            style={[style.deny_solicitation_button, { opacity: canManage ? 1 : 0.4 }]}
+            disabled={!canManage}
+            onPress={(e) => {
+              (e as { stopPropagation?: () => void })?.stopPropagation?.();
+              onDeny?.(appointmentId);
+            }}
+          >
             <AntDesign 
               name="close" 
               size={18} 
@@ -75,7 +115,7 @@ const PendingSolicitation = ({
           </TouchableOpacity>
         </View>
       </View>
-    </View>
+    </Pressable>
   )
 }
 
@@ -195,29 +235,4 @@ const style = StyleSheet.create({
 });
 
 export default PendingSolicitation;
-
-        {/* <View style={[style.appointment_status_tag, solicitationStatus === 'CONFIRMED'
-          ? style.confirmed_tag
-          : style.peding_tag
-        ]}>
-          <Text style={[style.appointment_status_tag_text, solicitationStatus === 'CONFIRMED'
-            ? style.confirmed_tag_text
-            : style.peding_tag_text
-          ]}>
-            { SOLICITATION_STATUS_MAP[solicitationStatus] }
-          </Text>
-        </View> */}
-
-
-          // const SOLICITATION_STATUS_MAP: Record<SolicitationStatus, string> = {
-  //   PENDING   : 'Pendente',
-  //   CONFIRMED : 'Confirmado',
-  // };
-
-
-  // type SolicitationStatus = AppointmentStatus;
-
-  // solicitationStatus   : SolicitationStatus;
-
-  // solicitationStatus,
 

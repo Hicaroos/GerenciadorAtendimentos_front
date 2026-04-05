@@ -34,9 +34,9 @@ export const style = StyleSheet.create({
 
   professor_disciplines_container: {
     ...userDashboardStyle.calendar_container,
-    alignItems: 'flex-start',
+    alignItems: 'center',
     justifyContent: 'flex-start',
-    gap: 16,
+    height: '50%',
   },
 
   next_appointments_list: {
@@ -50,7 +50,6 @@ export const style = StyleSheet.create({
     color: '#5561D7',
     marginTop: 20,
     marginLeft: 20,
-
   },
 
   professor_discipline_container: {
@@ -82,5 +81,32 @@ export const style = StyleSheet.create({
     color:  '#5E6BEF',
     fontWeight: 'bold',
     fontSize: 18,
+  },
+
+  professor_availibity_container: {
+    marginHorizontal: 20, 
+    marginTop: 20 ,
+    gap: 16,
+    // backgroundColor: 'red',
+  },
+
+  professor_availibity_title: {
+    fontSize: 16, 
+    fontWeight: 'bold', 
+    color: '#5561D7',
+  },
+
+  professor_reports_container: {
+
+  },
+
+  professor_reports_label: {
+    color: 'gray',
+  },
+  
+  professor_reports_numbers: {
+    color: "#5561D7", 
+    fontWeight: 700,
+    fontSize: 20,
   },
 });
